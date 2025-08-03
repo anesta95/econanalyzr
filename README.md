@@ -1,0 +1,45 @@
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+# econanalyzr
+
+<!-- badges: start -->
+
+<!-- badges: end -->
+
+The goal of econanalyzr is to provide a set of functions that perform
+data manipulations that are common when working with economic data.
+Currently the only function available is the `annualize_change()`
+calculates the annualized rate of change between two figures for a given
+time period.
+
+## Installation
+
+You can install the development version of econanalyzr from
+[GitHub](https://github.com/) with:
+
+``` r
+# install.packages("pak")
+pak::pak("anesta95/econanalyzr")
+```
+
+## Example
+
+This is a basic example which shows you how to solve a common problem:
+
+``` r
+library(econanalyzr)
+
+# Example: annualizing monthly changes in GDP
+start_vals <- c(100, 105, 110)
+end_vals   <- c(102, 107, 112)
+time_elapsed <- 1  # 1 month between values
+
+annualized_rates <- annualize_change(
+  start_values = start_vals,
+  end_values = end_vals,
+  time_elapsed = time_elapsed,
+  time_unit = "monthly",
+  projection_direction = "up"
+)
+```
