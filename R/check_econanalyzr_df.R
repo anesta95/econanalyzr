@@ -13,7 +13,7 @@
 #' @importFrom tibble tibble as_tibble
 #' @importFrom purrr map_chr
 #' @importFrom dplyr mutate filter pull
-#' @importFrom rlang abort
+#' @importFrom rlang abort .data
 #' @importFrom glue glue
 #'
 #' @examples

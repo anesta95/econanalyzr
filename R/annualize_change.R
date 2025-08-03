@@ -4,7 +4,7 @@
 #'
 #' @param start_values A numeric vector of starting values.
 #' @param end_values A numeric vector of ending values.
-#' @param time_elapsed A single numeric value or vector of the same length as start_values/end_values, representing time units between values.
+#' @param time_elapsed A single value numeric scalar or numeric vector of the same length as start_values/end_values, representing time units between values.
 #' @param time_unit Character string: "daily", "weekly", "monthly", or "quarterly".
 #' @param projection_direction Character string: "up" (project to annual) or "down" (normalize from long period to annual).
 #'
