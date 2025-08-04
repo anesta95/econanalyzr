@@ -34,11 +34,9 @@ library(econanalyzr)
 # Basic scalar usage
 percent_change(100, 120)
 #> [1] 0.2
-#> [1] 0.2
 
 # Vectorized usage with recycled inputs
 percent_change(c(100, 200, 300), 330)
-#> [1] 2.30 0.65 0.10
 #> [1] 2.30 0.65 0.10
 
 # Handling NA values (produces warning)
@@ -46,8 +44,6 @@ percent_change(c(100, NA), c(110, 120))
 #> Warning in percent_change(c(100, NA), c(110, 120)): One or more input values
 #> are NA; returning NA for those cases.
 #> [1] 0.1  NA
-#> Warning: One or more input values are NA; returning NA for those cases.
-#> [1] 0.10   NA
 ```
 
 This is using the `annualize_change()` function to calculate the
@@ -69,6 +65,4 @@ annualize_change(
   projection_direction = "up"
 )
 #> [1] 0.2682418 0.2541045 0.2413780
-
-# [1] 0.2682418 0.2541045 0.2413780
 ```
