@@ -9,10 +9,14 @@
 
 The goal of econanalyzr is to provide a set of functions that perform
 data manipulations that are common when working with economic data.
-Currently the only functions available are the `percent_change()` which
-calculates the percentage change between two numeric scalars or vectors
-and `annualize_change()` which calculate the annualized rate of change
-between two numeric scalars or vectors for a given time period.
+Functions currently available include:
+
+- `percent_change()` which calculates the percentage change between two
+  numeric scalars or vectors
+- `annualize_change()` which calculate the annualized rate of change
+  between two numeric scalars or vectors for a given time period.
+- `create_index()` which creates a 0 or 100-based index version of a
+  numeric vector based on the starting value supplied.
 
 ## Installation
 
@@ -26,8 +30,8 @@ pak::pak("anesta95/econanalyzr")
 
 ## Examples
 
-This is using the `percent_change()` function to calculate the
-percentage change between two numeric scalars and vectors:
+Use the `percent_change()` function to calculate the percentage change
+between two numeric scalars and vectors:
 
 ``` r
 library(econanalyzr)
@@ -46,8 +50,8 @@ percent_change(c(100, NA), c(110, 120))
 #> [1] 0.1  NA
 ```
 
-This is using the `annualize_change()` function to calculate the
-annualized *one month* change between two numeric vectors of values:
+Use the `annualize_change()` function to calculate the annualized *one
+month* change between two numeric vectors of values:
 
 ``` r
 library(econanalyzr)
@@ -65,4 +69,47 @@ annualize_change(
   projection_direction = "up"
 )
 #> [1] 0.2682418 0.2541045 0.2413780
+```
+
+Use the `create_index()` to transform a vector of numeric values into a
+0 or 100 based index
+
+``` r
+library(econanalyzr)
+library(dplyr)
+#> 
+#> Attaching package: 'dplyr'
+#> The following objects are masked from 'package:stats':
+#> 
+#>     filter, lag
+#> The following objects are masked from 'package:base':
+#> 
+#>     intersect, setdiff, setequal, union
+
+# Basic usage: index centered at 100 using the first value
+create_index(c(100, 120, 130))
+#> [1] 100 120 130
+
+# Index centered at 0% change
+create_index(c(100, 120, 130), idx_type = 0)
+#> [1]  0 20 30
+
+# Use a different base position (e.g., second value)
+create_index(c(90, 100, 110), idx_pos = 2)
+#> [1]  90 100 110
+
+# Use the last value as the base, and index to 0
+create_index(c(80, 90, 100), idx_pos = 3, idx_type = 0)
+#> [1] -20 -10   0
+
+# Tidyverse integration for time series or grouped workflows
+tibble(year = 2020:2023, gdp = c(21000, 22000, 24000, 26000)) %>%
+  mutate(gdp_index = create_index(gdp))
+#> # A tibble: 4 × 3
+#>    year   gdp gdp_index
+#>   <int> <dbl>     <dbl>
+#> 1  2020 21000      100 
+#> 2  2021 22000      105.
+#> 3  2022 24000      114.
+#> 4  2023 26000      124.
 ```
