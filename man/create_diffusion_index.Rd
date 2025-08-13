@@ -13,13 +13,13 @@ create_diffusion_index(
 )
 }
 \arguments{
-\item{pct_increased}{Numeric scalar or vector: percent of items that increased.}
+\item{pct_increased}{Numeric scalar or vector in [0, 1]: percent of items that increased.}
 
-\item{pct_decreased}{Numeric scalar or vector: percent of items that decreased.}
+\item{pct_decreased}{Numeric scalar or vector in [0, 1]: percent of items that decreased.}
 
-\item{pct_unchanged}{Numeric scalar or vector: percent of items unchanged.}
+\item{pct_unchanged}{Numeric scalar or vector in [0, 1]: percent of items unchanged.}
 
-\item{pct_change}{Numeric scalar or vector: percent change for Conference Board method.}
+\item{pct_change}{Numeric scalar or vector (finite real; may be < 0 or > 1): percent change for Conference Board.}
 
 \item{idx_type}{Character string: one of "Federal Reserve" (default), "IHS-PMI", or "Conference Board".}
 }
@@ -34,7 +34,7 @@ Supported index types include:
 \itemize{
 \item \code{"Federal Reserve"}: Difference between percent increased and decreased, multiplied by 100.
 \item \code{"IHS-PMI"}: Sum of percent increased and half the percent unchanged.
-\item \code{"Conference Board"}: Encodes percent change into categorical scores (1, 0.5, 0) and returns the mean.
+\item \code{"Conference Board"}: Encodes pct_change into categorical scores (1, 0.5, 0) and returns the mean.
 }
 }
 \examples{

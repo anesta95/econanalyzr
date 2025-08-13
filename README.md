@@ -8,15 +8,23 @@
 <!-- badges: end -->
 
 The goal of econanalyzr is to provide a set of functions that perform
-data manipulations that are common when working with economic data.
+data transformations that are common when working with economic data.
 Functions currently available include:
 
 - `percent_change()` which calculates the percentage change between two
   numeric scalars or vectors
 - `annualize_change()` which calculate the annualized rate of change
   between two numeric scalars or vectors for a given time period.
-- `create_index()` which creates a 0 or 100-based index version of a
+- `create_index()` which calculates a 0 or 100-based index version of a
   numeric vector based on the starting value supplied.
+- `create_diffusion_index()` which calculates a diffusion index for two
+  numeric scalars or vectors based on the [Federal
+  Reserve](https://www.richmondfed.org/-/media/richmondfedorg/publications/research/economic_quarterly/2004/fall/pdf/harrisowenssarte.pdf)
+  or [IHS
+  Markit](https://cdn.ihsmarkit.com/www/pdf/1218/IHS-Markit-PMI-Introduction.pdf)
+  methods or one numeric scalar or vector based on the [Conference
+  Board](https://www.conference-board.org/data/bci/index.cfm?id=2180)
+  method.
 
 ## Installation
 
@@ -28,7 +36,7 @@ You can install the development version of econanalyzr from
 pak::pak("anesta95/econanalyzr")
 ```
 
-## Examples
+## Data Analysis Examples
 
 Use the `percent_change()` function to calculate the percentage change
 between two numeric scalars and vectors:
@@ -72,7 +80,7 @@ annualize_change(
 ```
 
 Use the `create_index()` to transform a vector of numeric values into a
-0 or 100 based index
+0 or 100 based index:
 
 ``` r
 library(econanalyzr)
@@ -112,4 +120,104 @@ tibble(year = 2020:2023, gdp = c(21000, 22000, 24000, 26000)) %>%
 #> 2  2021 22000      105.
 #> 3  2022 24000      114.
 #> 4  2023 26000      124.
+```
+
+Use the `create_diffusion_index()` to calculate a Federal Reserve or IHS
+diffusion index from numeric values of percent increase, percent
+unchanged, or percent decreasing or a Conference Board diffusion index
+from percent change values.
+
+``` r
+library(econanalyzr)
+library(dplyr)
+
+# --- Federal Reserve method -----------------------------------------------
+# Formula: (pct_increased - pct_decreased) * 100
+create_diffusion_index(
+  pct_increased = c(0.60, 0.50, 0.55),
+  pct_decreased = c(0.20, 0.30, 0.25)
+)
+#> [1] 40 20 30
+
+# Extra args are ignored with a warning
+create_diffusion_index(
+  pct_increased = 0.60,
+  pct_decreased = 0.20,
+  pct_unchanged = 0.10  # <- will be ignored with a warning
+)
+#> Warning in create_diffusion_index(pct_increased = 0.6, pct_decreased = 0.2, :
+#> Ignoring 'pct_unchanged' and 'pct_change' for 'Federal Reserve' method.
+#> [1] 40
+
+# --- IHS-PMI method --------------------------------------------------------
+# Formula: (pct_increased + 0.5 * pct_unchanged) * 100
+create_diffusion_index(
+  pct_increased = c(0.52, 0.58),
+  pct_unchanged = c(0.36, 0.30),
+  idx_type = "IHS-PMI"
+)
+#> [1] 0.70 0.73
+
+# Extra args are ignored with a warning
+create_diffusion_index(
+  pct_increased = 0.55,
+  pct_unchanged = 0.30,
+  pct_decreased = 0.15, # <- ignored with a warning
+  idx_type = "IHS-PMI"
+)
+#> Warning in create_diffusion_index(pct_increased = 0.55, pct_unchanged = 0.3, :
+#> Ignoring 'pct_decreased' and 'pct_change' for 'IHS-PMI' method.
+#> [1] 0.7
+
+
+# --- Conference Board method -----------------------------------------------
+# Encode pct_change per element: > 0.0005 => 1, between +/- 0.0005 => 0.5, < -0.0005 => 0
+# Returns the mean of encoded values
+create_diffusion_index(
+  pct_change = c(0.0010, -0.0020, 0.0002),
+  idx_type = "Conference Board"
+)
+#> [1] 0.5
+
+
+# --- Tidyverse examples -----------------------------------------------------
+# 1) Column-wise calculation in mutate()
+tbl <- tibble(
+  series = c("A", "A", "A", "B", "B", "B"),
+  period = as.Date("2024-01-01") + c(0, 31, 62, 0, 31, 62),
+  pct_increased = c(0.56, 0.61, 0.57, 0.48, 0.52, 0.55),
+  pct_decreased = c(0.22, 0.19, 0.21, 0.30, 0.28, 0.25),
+  pct_unchanged = c(0.22, 0.20, 0.22, 0.22, 0.20, 0.20)
+)
+
+tbl %>%
+  mutate(
+    fed_idx = create_diffusion_index(pct_increased, pct_decreased),
+    ihs_idx = create_diffusion_index(pct_increased = pct_increased, pct_unchanged = pct_unchanged, idx_type = "IHS-PMI")
+  )
+#> # A tibble: 6 × 7
+#>   series period     pct_increased pct_decreased pct_unchanged fed_idx ihs_idx
+#>   <chr>  <date>             <dbl>         <dbl>         <dbl>   <dbl>   <dbl>
+#> 1 A      2024-01-01          0.56          0.22          0.22      34    0.67
+#> 2 A      2024-02-01          0.61          0.19          0.2       42    0.71
+#> 3 A      2024-03-03          0.57          0.21          0.22      36    0.68
+#> 4 B      2024-01-01          0.48          0.3           0.22      18    0.59
+#> 5 B      2024-02-01          0.52          0.28          0.2       24    0.62
+#> 6 B      2024-03-03          0.55          0.25          0.2       30    0.65
+
+# 2) Grouped summarize for Conference Board
+cb_tbl <- tibble(
+  industry = rep(c("Goods", "Services"), each = 5),
+  pct_change = c(0.001, 0.0004, -0.0008, 0.002, -0.001,
+                 0.0003, -0.0006, -0.0012, 0.0015, 0.0002)
+)
+
+cb_tbl %>%
+  group_by(industry) %>%
+  summarise(cb_index = create_diffusion_index(pct_change = pct_change, idx_type = "Conference Board"), .groups = "drop")
+#> # A tibble: 2 × 2
+#>   industry cb_index
+#>   <chr>       <dbl>
+#> 1 Goods         0.5
+#> 2 Services      0.4
 ```
