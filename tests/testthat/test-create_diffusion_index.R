@@ -22,7 +22,7 @@ test_that("Conference Board calculation works as expected", {
     pct_change = c(0.001, -0.001, 0),
     idx_type = "Conference Board"
   )
-  expect_equal(result, mean(c(1, 0, 0.5)))
+  expect_equal(result, mean(c(1, 0, 0.5)) * 100)
 })
 
 test_that("mismatched lengths throw errors", {
@@ -224,6 +224,6 @@ test_that("pct_change may be any finite real (outside [0,1] allowed)", {
     pct_change = c(1.2, -0.8, 0),
     idx_type = "Conference Board"
   )
-  # Encoded: 1.2 -> 1; -0.8 -> 0; 0 -> 0.5; mean = 0.5
-  expect_equal(res, 0.5)
+  # Encoded: 1.2 -> 1; -0.8 -> 0; 0 -> 0.5; mean = 0.5 * 100
+  expect_equal(res, 0.5 * 100)
 })

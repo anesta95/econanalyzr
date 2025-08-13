@@ -164,12 +164,12 @@ create_diffusion_index(
 
 # --- Conference Board method -----------------------------------------------
 # Encode pct_change per element: > 0.0005 => 1, between +/- 0.0005 => 0.5, < -0.0005 => 0
-# Returns the mean of encoded values
+# Returns the mean of encoded values times 100
 create_diffusion_index(
   pct_change = c(0.0010, -0.0020, 0.0002),
   idx_type = "Conference Board"
 )
-#> [1] 0.5
+#> [1] 50
 
 
 # --- Tidyverse examples -----------------------------------------------------
@@ -210,6 +210,6 @@ cb_tbl %>%
 #> # A tibble: 2 × 2
 #>   industry cb_index
 #>   <chr>       <dbl>
-#> 1 Goods         0.5
-#> 2 Services      0.4
+#> 1 Goods          50
+#> 2 Services       40
 ```

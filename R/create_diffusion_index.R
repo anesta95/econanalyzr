@@ -120,7 +120,7 @@ create_diffusion_index <- function(pct_increased = NULL,
       TRUE ~ NA_real_
     )
 
-    diffusion_idx <- mean(encoded, na.rm = TRUE)
+    diffusion_idx <- mean(encoded, na.rm = TRUE) * 100
 
     return(diffusion_idx)
   }
