@@ -14,7 +14,7 @@ test_that("IHS-PMI calculation works as expected", {
     pct_unchanged  = 0.3,
     idx_type = "IHS-PMI"
   )
-  expect_equal(result, 0.6 + 0.5 * 0.3)
+  expect_equal(result, (0.6 + 0.5 * 0.3) * 100)
 })
 
 test_that("Conference Board calculation works as expected", {

@@ -77,7 +77,7 @@ based index:
 
 ```{r create_index example}
 library(econanalyzr)
-library(dplyr)
+suppressPackageStartupMessages(library(dplyr))
 
 # Basic usage: index centered at 100 using the first value
 create_index(c(100, 120, 130))
@@ -102,7 +102,7 @@ change values.
 
 ```{r create_diffusion_index example}
 library(econanalyzr)
-library(dplyr)
+suppressPackageStartupMessages(library(dplyr))
 
 # --- Federal Reserve method -----------------------------------------------
 # Formula: (pct_increased - pct_decreased) * 100

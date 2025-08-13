@@ -84,15 +84,7 @@ Use the `create_index()` to transform a vector of numeric values into a
 
 ``` r
 library(econanalyzr)
-library(dplyr)
-#> 
-#> Attaching package: 'dplyr'
-#> The following objects are masked from 'package:stats':
-#> 
-#>     filter, lag
-#> The following objects are masked from 'package:base':
-#> 
-#>     intersect, setdiff, setequal, union
+suppressPackageStartupMessages(library(dplyr))
 
 # Basic usage: index centered at 100 using the first value
 create_index(c(100, 120, 130))
@@ -129,7 +121,7 @@ from percent change values.
 
 ``` r
 library(econanalyzr)
-library(dplyr)
+suppressPackageStartupMessages(library(dplyr))
 
 # --- Federal Reserve method -----------------------------------------------
 # Formula: (pct_increased - pct_decreased) * 100
@@ -156,7 +148,7 @@ create_diffusion_index(
   pct_unchanged = c(0.36, 0.30),
   idx_type = "IHS-PMI"
 )
-#> [1] 0.70 0.73
+#> [1] 70 73
 
 # Extra args are ignored with a warning
 create_diffusion_index(
@@ -167,7 +159,7 @@ create_diffusion_index(
 )
 #> Warning in create_diffusion_index(pct_increased = 0.55, pct_unchanged = 0.3, :
 #> Ignoring 'pct_decreased' and 'pct_change' for 'IHS-PMI' method.
-#> [1] 0.7
+#> [1] 70
 
 
 # --- Conference Board method -----------------------------------------------
@@ -198,12 +190,12 @@ tbl %>%
 #> # A tibble: 6 × 7
 #>   series period     pct_increased pct_decreased pct_unchanged fed_idx ihs_idx
 #>   <chr>  <date>             <dbl>         <dbl>         <dbl>   <dbl>   <dbl>
-#> 1 A      2024-01-01          0.56          0.22          0.22      34    0.67
-#> 2 A      2024-02-01          0.61          0.19          0.2       42    0.71
-#> 3 A      2024-03-03          0.57          0.21          0.22      36    0.68
-#> 4 B      2024-01-01          0.48          0.3           0.22      18    0.59
-#> 5 B      2024-02-01          0.52          0.28          0.2       24    0.62
-#> 6 B      2024-03-03          0.55          0.25          0.2       30    0.65
+#> 1 A      2024-01-01          0.56          0.22          0.22      34      67
+#> 2 A      2024-02-01          0.61          0.19          0.2       42      71
+#> 3 A      2024-03-03          0.57          0.21          0.22      36      68
+#> 4 B      2024-01-01          0.48          0.3           0.22      18      59
+#> 5 B      2024-02-01          0.52          0.28          0.2       24      62
+#> 6 B      2024-03-03          0.55          0.25          0.2       30      65
 
 # 2) Grouped summarize for Conference Board
 cb_tbl <- tibble(

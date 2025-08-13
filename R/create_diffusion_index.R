@@ -77,7 +77,9 @@ create_diffusion_index <- function(pct_increased = NULL,
       stop("'pct_increased' and 'pct_decreased' must be the same length.")
     }
 
-    return((pct_increased - pct_decreased) * 100)
+    diffusion_idx <- (pct_increased - pct_decreased) * 100
+
+    return(diffusion_idx)
   }
 
   if (idx_type == "IHS-PMI") {
@@ -95,7 +97,9 @@ create_diffusion_index <- function(pct_increased = NULL,
       stop("'pct_increased' and 'pct_unchanged' must be the same length.")
     }
 
-    return(pct_increased + 0.5 * pct_unchanged)
+    diffusion_idx <- (pct_increased + 0.5 * pct_unchanged) * 100
+
+    return(diffusion_idx)
   }
 
   if (idx_type == "Conference Board") {
@@ -116,7 +120,9 @@ create_diffusion_index <- function(pct_increased = NULL,
       TRUE ~ NA_real_
     )
 
-    return(mean(encoded, na.rm = TRUE))
+    diffusion_idx <- mean(encoded, na.rm = TRUE)
+
+    return(diffusion_idx)
   }
 
   stop("Unhandled 'idx_type'. This should not occur.")
