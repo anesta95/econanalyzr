@@ -18,7 +18,9 @@ RoxygenNote: 7.3.2
 Imports: 
     dplyr,
     glue,
+    httr2,
     purrr,
+    readr,
     rlang,
     tibble,
     vctrs

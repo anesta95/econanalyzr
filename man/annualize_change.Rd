@@ -8,7 +8,7 @@ annualize_change(
   start_values,
   end_values,
   time_elapsed,
-  time_unit = c("daily", "weekly", "monthly", "quarterly"),
+  time_unit = c("daily", "weekly", "monthly", "quarterly", "annually"),
   projection_direction = c("up", "down")
 )
 }
@@ -19,9 +19,9 @@ annualize_change(
 
 \item{time_elapsed}{A single value numeric scalar or numeric vector of the same length as start_values/end_values, representing time units between values.}
 
-\item{time_unit}{Character string: "daily", "weekly", "monthly", or "quarterly".}
+\item{time_unit}{Character string: "daily", "weekly", "monthly", "quarterly", or "annually".}
 
-\item{projection_direction}{Character string: "up" (project to annual) or "down" (normalize from long period to annual).}
+\item{projection_direction}{Character string: "up" (project from shorter period to annual) or "down" (normalize from long period to annual).}
 }
 \value{
 A numeric vector of annualized rates of change.

@@ -37,6 +37,11 @@ test_that("scalar time_elapsed is auto-recycled", {
   expect_equal(result, expected)
 })
 
+test_that("annual time unit with projection direction of up", {
+  expect_error(annualize_change(200, 350, 4, "annually", "up"),
+               regexp = "projection cannot be up")
+})
+
 test_that("non-numeric inputs raise errors", {
   expect_error(annualize_change("100", 110, 1, "monthly", "up"))
   expect_error(annualize_change(100, "110", 1, "monthly", "up"))
