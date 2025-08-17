@@ -36,6 +36,18 @@ You can install the development version of econanalyzr from
 pak::pak("anesta95/econanalyzr")
 ```
 
+## Data Import Examples
+
+Use the `get_bls_data()` function to get TSV data from the BLS survey
+flat file database. This function will require you to provide a valid
+email in the request `user-agent` which is now required to
+programmatically obtain BLS data in this way.
+
+``` r
+library(econanalyzr)
+bls_jolts <- get_bls_data(bls_url = "https://download.bls.gov/pub/time.series/jt/jt.data.1.AllItems", email = "govdata.decimeter618@passmail.net")
+```
+
 ## Data Analysis Examples
 
 Use the `percent_change()` function to calculate the percentage change
