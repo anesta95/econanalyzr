@@ -2,30 +2,58 @@
 % Please edit documentation in R/annualize_change.R
 \name{annualize_change}
 \alias{annualize_change}
-\title{Calculate Annualized Rate of Change}
+\title{Calculate annualized rate of change}
 \usage{
 annualize_change(
   start_values,
   end_values,
   time_elapsed,
   time_unit = c("daily", "weekly", "monthly", "quarterly", "annually"),
-  projection_direction = c("up", "down")
+  year_length = 365.2425
 )
 }
 \arguments{
-\item{start_values}{A numeric vector of starting values.}
+\item{start_values}{Numeric scalar or vector of positive start values.}
 
-\item{end_values}{A numeric vector of ending values.}
+\item{end_values}{Numeric scalar or vector of positive end values.
+If any of \code{start_values}, \code{end_values}, or \code{time_elapsed} is
+a scalar, it is recycled to the common length; otherwise,
+lengths must be compatible.}
 
-\item{time_elapsed}{A single value numeric scalar or numeric vector of the same length as start_values/end_values, representing time units between values.}
+\item{time_elapsed}{Numeric scalar or vector of elapsed time in \code{time_unit}
+between start and end. If scalar, it is recycled.}
 
-\item{time_unit}{Character string: "daily", "weekly", "monthly", "quarterly", or "annually".}
+\item{time_unit}{One of "daily", "weekly", "monthly", "quarterly", "annually".}
 
-\item{projection_direction}{Character string: "up" (project from shorter period to annual) or "down" (normalize from long period to annual).}
+\item{year_length}{Days per year used when \code{time_unit} is "daily" (and to derive
+weeks/year when \code{time_unit} is "weekly"). Defaults to 365.2425
+(Gregorian average year).}
 }
 \value{
-A numeric vector of annualized rates of change.
+A numeric scalar or vector of annualized rates, same length as the recycled inputs.
 }
 \description{
-Computes the annualized rate of change from a numeric vector of values over specified time periods.
+Computes the annualized rate of change from paired start and end values
+over a given time interval, annualizing according to the specified unit.
+}
+\examples{
+# Scalar (monthly): from 100 to 103 over 1 month -> annualized rate
+annualize_change(100, 103, time_elapsed = 1, time_unit = "monthly")
+
+# Vectorized (quarterly): scalar start recycled to match end/time vectors
+annualize_change(
+  start_values = 100,
+  end_values   = c(101, 98, 120),
+  time_elapsed = c(1, 2, 3),
+  time_unit    = "quarterly"
+)
+
+# Weekly with exact 52-week convention (52 * 7 = 364 days)
+annualize_change(
+  start_values = 100,
+  end_values   = 102,
+  time_elapsed = 4,
+  time_unit    = "weekly",
+  year_length  = 364
+)
 }

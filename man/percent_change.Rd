@@ -2,27 +2,28 @@
 % Please edit documentation in R/percent_change.R
 \name{percent_change}
 \alias{percent_change}
-\title{Calculate Percent Change Between Two Values}
+\title{Calculate percent change between two values}
 \usage{
 percent_change(start_value, end_value)
 }
 \arguments{
-\item{start_value}{A numeric scalar or vector of starting values.}
+\item{start_value}{Numeric \strong{scalar or vector} of starting values.}
 
-\item{end_value}{A numeric scalar or vector of ending values.}
+\item{end_value}{Numeric \strong{scalar or vector} of ending values.}
 }
 \value{
-A numeric vector of percent changes.
+A numeric scalar or vector of percent changes (same length as recycled inputs).
 }
 \description{
-Computes the percent change from a starting value to an ending value.
+Computes the percent change from \code{start_value} to \code{end_value}:
+\deqn{(end - start) / start}
 }
 \details{
-This function is vectorized and designed for use in tidyverse workflows
-such as \code{dplyr::mutate()}.
+Vectorized for tidyverse workflows (e.g., \code{dplyr::mutate()}).
 }
 \examples{
-percent_change(100, 120)      # 0.20 (20\% increase)
-percent_change(c(100, NA), c(110, 120))  # returns c(0.10, NA) with warning
-
+percent_change(100, 120)                      # 0.20 (20\% increase)
+percent_change(c(100, 80), c(110, 72))        # c(0.10, -0.10)
+percent_change(c(100, NA), c(110, 120))       # c(0.10, NA)
+percent_change(0, 5)                          # NA with a warning (division by zero)
 }

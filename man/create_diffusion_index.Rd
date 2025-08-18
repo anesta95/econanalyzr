@@ -2,7 +2,7 @@
 % Please edit documentation in R/create_diffusion_index.R
 \name{create_diffusion_index}
 \alias{create_diffusion_index}
-\title{Calculate a Diffusion Index}
+\title{Calculate a diffusion index}
 \usage{
 create_diffusion_index(
   pct_increased = NULL,
@@ -13,33 +13,32 @@ create_diffusion_index(
 )
 }
 \arguments{
-\item{pct_increased}{Numeric scalar or vector in [0, 1]: percent of items that increased.}
+\item{pct_increased}{Numeric scalar or vector in [0, 1]: percent increased.}
 
-\item{pct_decreased}{Numeric scalar or vector in [0, 1]: percent of items that decreased.}
+\item{pct_decreased}{Numeric scalar or vector in [0, 1]: percent decreased.}
 
-\item{pct_unchanged}{Numeric scalar or vector in [0, 1]: percent of items unchanged.}
+\item{pct_unchanged}{Numeric scalar or vector in [0, 1]: percent unchanged.}
 
-\item{pct_change}{Numeric scalar or vector (finite real; may be < 0 or > 1): percent change for Conference Board.}
+\item{pct_change}{Numeric scalar or vector (finite real; may be < 0 or > 1):
+used only for \code{"Conference Board"}.}
 
-\item{idx_type}{Character string: one of "Federal Reserve" (default), "IHS-PMI", or "Conference Board".}
+\item{idx_type}{One of \code{"Federal Reserve"} (default), \code{"IHS-PMI"}, or \code{"Conference Board"}.}
 }
 \value{
-A numeric vector representing the diffusion index.
+\itemize{
+\item For \code{"Federal Reserve"} and \code{"IHS-PMI"}: a numeric vector the same length as the recycled inputs.
+\item For \code{"Conference Board"}: a single numeric scalar (the encoded mean * 100).
+}
 }
 \description{
-Computes a diffusion index using one of several popular methodologies.
+Computes a diffusion index using one of three common methodologies:
 }
 \details{
-Supported index types include:
 \itemize{
-\item \code{"Federal Reserve"}: Difference between percent increased and decreased, multiplied by 100.
-\item \code{"IHS-PMI"}: Sum of percent increased and half the percent unchanged.
-\item \code{"Conference Board"}: Encodes pct_change into categorical scores (1, 0.5, 0) and returns the mean.
+\item \code{"Federal Reserve"}: \eqn{(pct\_increased - pct\_decreased) * 100}
+\item \code{"IHS-PMI"}: \eqn{(pct\_increased + 0.5 * pct\_unchanged) * 100}
+\item \code{"Conference Board"}: encode each element of \code{pct_change} as 1 (up),
+0.5 (unchanged), or 0 (down) using a small threshold (default 0.05\%), then
+return \eqn{100 \times \mathrm{mean}(\text{encoded}, na.rm=TRUE)}.
 }
-}
-\examples{
-create_diffusion_index(pct_increased = c(0.6, 0.5), pct_decreased = c(0.2, 0.3))
-create_diffusion_index(pct_increased = 0.55, pct_unchanged = 0.30, idx_type = "IHS-PMI")
-create_diffusion_index(pct_change = c(0.001, -0.001, 0.0001), idx_type = "Conference Board")
-
 }

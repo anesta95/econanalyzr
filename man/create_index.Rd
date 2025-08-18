@@ -2,35 +2,44 @@
 % Please edit documentation in R/create_index.R
 \name{create_index}
 \alias{create_index}
-\title{Create Indexed Values from a Numeric Vector}
+\title{Create indexed values from a numeric vector}
 \usage{
 create_index(num_vec, idx_pos = 1, idx_type = 100)
 }
 \arguments{
-\item{num_vec}{A numeric vector of length greater than 1.}
+\item{num_vec}{A numeric vector of length > 1.}
 
-\item{idx_pos}{A numeric scalar indicating the index position to use as the base (default is 1).}
+\item{idx_pos}{A base selector: either a 1-based (integer-ish) position, or—\strong{only if}
+\code{num_vec} has names—a single character string matching one name.}
 
-\item{idx_type}{A numeric scalar; either \code{100} (index relative to 100) or \code{0} (relative percent change). Default is \code{100}.}
+\item{idx_type}{Numeric scalar, either \code{100} (base-100 index) or \code{0} (percent change). Default \code{100}.}
 }
 \value{
-A numeric vector of indexed values.
+A numeric vector of indexed values (same length as \code{num_vec}).
 }
 \description{
-Computes an index column from a numeric vector based on a specified base position and index type.
+Computes an index column from a numeric vector relative to a base element:
+\itemize{
+\item \code{idx_type = 100}: classic base-100 index (base value -> 100, others scaled).
+\item \code{idx_type = 0}  : percent change from base (base value -> 0, others as \% difference).
+}
 }
 \details{
-This function is useful for creating indexed time series or normalizing numeric vectors for comparison.
+If \code{num_vec} has names, \code{idx_pos} may be the \strong{name} of the base element (character)
+or a numeric (integer-ish) position. If \code{num_vec} is unnamed, \code{idx_pos} must be numeric.
 }
 \examples{
-# Basic usage
+# Basic usage (base-100)
 create_index(c(50, 100, 150))
 
-# Index centered at 0\%
+# Percent change from base (base -> 0\%)
 create_index(c(50, 100, 150), idx_type = 0)
 
-# Using the second value as base
+# Using the second value as base (by position)
 create_index(c(90, 100, 120), idx_pos = 2)
 
-
+# Named vector: select base by name (only works because vector has names)
+x <- c(a = 80, b = 100, c = 120)
+create_index(x, idx_pos = "b")        # base-100 index with "b" as base
+create_index(x, idx_pos = "b", idx_type = 0)  # percent change from "b"
 }
