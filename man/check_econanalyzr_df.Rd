@@ -4,21 +4,39 @@
 \alias{check_econanalyzr_df}
 \title{Validate econanalyzr tibble structure}
 \usage{
-check_econanalyzr_df(df)
+check_econanalyzr_df(df, datetime_tz = "UTC")
 }
 \arguments{
-\item{df}{A data frame or tibble to validate}
+\item{df}{A data frame or tibble to validate.}
+
+\item{datetime_tz}{String timezone used when coercing \code{POSIXct/POSIXlt} to \code{Date}.
+Defaults to \code{"UTC"} for deterministic behavior across environments.}
 }
 \value{
-A validated tibble
+The validated tibble (possibly reordered and/or with \code{date}/\code{value} coerced).
 }
 \description{
-This function checks whether the input is a valid econanalyzr data frame/tibble:
+Enforces the econanalyzr schema:
 \itemize{
-\item It must be a data.frame or tibble.
-\item It must contain exactly the first 9 required columns with specific types and classes in order.
-\item It may contain optional columns between required columns and the final one.
-\item The final column must be \code{viz_type_text} with type and class \code{character}.
+\item First 9 \strong{required} columns with exact names and expected low-level type & primary class:
+\code{date (Date/double)}, \code{date_period_text (character)}, \code{value (numeric/double)},
+\code{data_element_text (character)}, \code{data_measure_text (character)},
+\code{date_measure_text (character)}, \code{data_transform_text (character)},
+\code{geo_entity_type_text (character)}, \code{geo_entity_text (character)}.
+\item Any number of \strong{optional} columns may appear after the first 9.
+\item The \strong{final} column must be \code{viz_type_text} of type/class \code{character}.
+}
+}
+\details{
+If all required columns and \code{viz_type_text} are present but out of order, the function
+emits a warning and \strong{reorders} the columns to: required 9 (in order) → optional(s) → \code{viz_type_text}.
+
+Special handling:
+\itemize{
+\item \code{date}: accepts base \code{Date} and subclasses. Subclasses are \strong{coerced to plain \code{Date}} with a warning.
+\code{POSIXct/POSIXlt} are \strong{coerced to \code{Date}} by dropping time-of-day using \code{datetime_tz} (warning).
+\item \code{value}: must be \strong{double}; if it is numeric but not double (e.g., integer or other numeric class),
+the column is \strong{coerced to double} with a warning. Non-numeric is an error.
 }
 }
 \examples{
