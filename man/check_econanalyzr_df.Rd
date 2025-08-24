@@ -31,13 +31,22 @@ Enforces the econanalyzr schema:
 If all required columns and \code{viz_type_text} are present but out of order, the function
 emits a warning and \strong{reorders} the columns to: required 9 (in order) → optional(s) → \code{viz_type_text}.
 
-Special handling:
+Special handling of \code{date}:
 \itemize{
-\item \code{date}: accepts base \code{Date} and subclasses. Subclasses are \strong{coerced to plain \code{Date}} with a warning.
-\code{POSIXct/POSIXlt} are \strong{coerced to \code{Date}} by dropping time-of-day using \code{datetime_tz} (warning).
-\item \code{value}: must be \strong{double}; if it is numeric but not double (e.g., integer or other numeric class),
+\item Accepts base \code{Date} and subclasses. Subclasses are \strong{coerced to plain \code{Date}} with a warning.
+\item Accepts \code{zoo::yearmon}/\code{zoo::yearqtr} (if \code{zoo} is installed) and \strong{always coerces to \code{Date} at
+the \emph{start of the period}} (first day of the month/quarter) with a warning.
+\item Accepts \code{POSIXct}/\code{POSIXlt} and \strong{coerces to \code{Date}} (drop time) using \code{datetime_tz}.
+}
+
+Special handling of \code{value}:
+\itemize{
+\item Must be \strong{double}; if numeric but not double (e.g., integer or other numeric class),
 the column is \strong{coerced to double} with a warning. Non-numeric is an error.
 }
+
+To support \code{yearmon}/\code{yearqtr}, add \code{zoo} to Suggests. If a \code{yearmon}/\code{yearqtr} column is
+encountered and \code{zoo} is not installed, a classed error is raised with guidance.
 }
 \examples{
 # check_econanalyzr_df(valid_data)

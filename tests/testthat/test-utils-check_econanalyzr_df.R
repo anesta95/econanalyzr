@@ -242,3 +242,82 @@ test_that("running the validator twice is idempotent", {
   expect_silent(z <- check_econanalyzr_df(y))  # second run should be silent
   expect_identical(y, z)
 })
+
+test_that("zoo::yearmon is coerced to Date at start of month (if zoo installed)", {
+  testthat::skip_if(!rlang::is_installed("zoo"))
+  ym <- zoo::as.yearmon(c("2024-01", "2024-02"))
+
+  x <- tibble::tibble(
+    date = ym,
+    date_period_text = c("2024-01", "2024-02"),
+    value = c(1, 2),
+    data_element_text = "Quits Rate",
+    data_measure_text = "Percent",
+    date_measure_text = "Monthly",
+    data_transform_text = "Seasonally Adjusted",
+    geo_entity_type_text = "Nation",
+    geo_entity_text = "US",
+    viz_type_text = "Line"
+  )
+
+  testthat::expect_warning(
+    y <- check_econanalyzr_df(x),
+    class = "econ_df_period_coerced_to_Date"
+  )
+
+  testthat::expect_s3_class(y$date, "Date")
+  testthat::expect_equal(y$date, as.Date(c("2024-01-01", "2024-02-01")))
+})
+
+test_that("zoo::yearqtr is coerced to Date at start of quarter (if zoo installed)", {
+  testthat::skip_if(!rlang::is_installed("zoo"))
+  yq <- zoo::as.yearqtr(c("2024 Q1", "2024 Q3"))
+
+  x <- tibble::tibble(
+    date = yq,
+    date_period_text = c("2024-Q1", "2024-Q3"),
+    value = c(10, 20),
+    data_element_text = "Hires Rate",
+    data_measure_text = "Percent",
+    date_measure_text = "Quarterly",
+    data_transform_text = "Seasonally Adjusted",
+    geo_entity_type_text = "Nation",
+    geo_entity_text = "US",
+    viz_type_text = "Line"
+  )
+
+  testthat::expect_warning(
+    y <- check_econanalyzr_df(x),
+    class = "econ_df_period_coerced_to_Date"
+  )
+
+  testthat::expect_s3_class(y$date, "Date")
+  # Q1 -> 01-01; Q3 -> 07-01 (start of quarter)
+  testthat::expect_equal(y$date, as.Date(c("2024-01-01", "2024-07-01")))
+})
+
+
+test_that("yearmon/yearqtr without zoo installed raises a classed error", {
+  skip_if(rlang::is_installed("zoo"))  # run this only when zoo is NOT installed
+  # Fake a 'yearmon' class vector (since zoo isn't installed in this environment)
+  ym_fake <- structure(2024 + (0:1)/12, class = "yearmon")
+
+  x <- tibble::tibble(
+    date = ym_fake,
+    date_period_text = c("2024-01", "2024-02"),
+    value = c(1, 2),
+    data_element_text = "Quits Rate",
+    data_measure_text = "Percent",
+    date_measure_text = "Monthly",
+    data_transform_text = "Seasonally Adjusted",
+    geo_entity_type_text = "Nation",
+    geo_entity_text = "US",
+    viz_type_text = "Line"
+  )
+
+  expect_error(
+    check_econanalyzr_df(x),
+    class = "econ_df_missing_zoo"
+  )
+})
+

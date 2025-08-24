@@ -16,9 +16,11 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Imports: 
+    dplyr,
     ggplot2,
     glue,
     httr2,
+    lubridate,
     readr,
     rlang,
     tibble,
@@ -27,5 +29,6 @@ Suggests:
     ragg,
     svglite,
     testthat (>= 3.0.0),
-    webfakes
+    webfakes,
+    zoo
 Config/testthat/edition: 3

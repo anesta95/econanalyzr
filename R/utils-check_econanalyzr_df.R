@@ -12,10 +12,14 @@
 #' If all required columns and `viz_type_text` are present but out of order, the function
 #' emits a warning and **reorders** the columns to: required 9 (in order) → optional(s) → `viz_type_text`.
 #'
-#' Special handling:
-#' - `date`: accepts base `Date` and subclasses. Subclasses are **coerced to plain `Date`** with a warning.
-#'   `POSIXct/POSIXlt` are **coerced to `Date`** by dropping time-of-day using `datetime_tz` (warning).
-#' - `value`: must be **double**; if it is numeric but not double (e.g., integer or other numeric class),
+#' Special handling of `date`:
+#' - Accepts base `Date` and subclasses. Subclasses are **coerced to plain `Date`** with a warning.
+#' - Accepts `zoo::yearmon`/`zoo::yearqtr` (if `zoo` is installed) and **always coerces to `Date` at
+#'   the *start of the period*** (first day of the month/quarter) with a warning.
+#' - Accepts `POSIXct`/`POSIXlt` and **coerces to `Date`** (drop time) using `datetime_tz`.
+#'
+#' Special handling of `value`:
+#' - Must be **double**; if numeric but not double (e.g., integer or other numeric class),
 #'   the column is **coerced to double** with a warning. Non-numeric is an error.
 #'
 #' @param df A data frame or tibble to validate.
@@ -24,8 +28,12 @@
 #'
 #' @return The validated tibble (possibly reordered and/or with `date`/`value` coerced).
 #'
+#' @details
+#' To support `yearmon`/`yearqtr`, add `zoo` to Suggests. If a `yearmon`/`yearqtr` column is
+#' encountered and `zoo` is not installed, a classed error is raised with guidance.
+#'
 #' @importFrom tibble as_tibble
-#' @importFrom rlang abort warn
+#' @importFrom rlang abort warn is_installed
 #' @importFrom glue glue
 #' @examples
 #' # check_econanalyzr_df(valid_data)
@@ -37,6 +45,7 @@ check_econanalyzr_df <- function(df, datetime_tz = "UTC") {
       class = c("econanalyzr_validation_error", "econ_df_not_dataframe")
     )
   }
+  # Do not auto-repair names; we explicitly check for duplicates below.
   df  <- tibble::as_tibble(df, .name_repair = "minimal")
   nms <- names(df)
 
@@ -86,7 +95,7 @@ check_econanalyzr_df <- function(df, datetime_tz = "UTC") {
   }
 
   ## Reorder if present-but-out-of-order -----------------------------------------
-  # Expected order: required 9 (in spec order) -> optional(s) (preserve original order) -> viz_type_text last
+  # Expected order: required 9 (in spec order) -> optional(s) -> viz_type_text last
   idx_req <- match(req_names, nms)
   idx_viz <- match("viz_type_text", nms)
   idx_opt <- setdiff(seq_along(nms), c(idx_req, idx_viz))
@@ -112,9 +121,30 @@ check_econanalyzr_df <- function(df, datetime_tz = "UTC") {
         class = "econ_df_date_subclass_coerced_to_Date"
       )
       df[["date"]] <- as.Date(date_col)
-      # Ensure the primary class is exactly "Date". This can be changed in the future for more flexibility
       class(df[["date"]]) <- "Date"
     }
+
+  } else if (inherits(date_col, "yearmon") || inherits(date_col, "yearqtr")) {
+    # Optional support via zoo: convert to Date at *start of period* (frac = 0)
+    if (!rlang::is_installed("zoo")) {
+      rlang::abort(
+        "Column 'date' is a 'zoo' period (yearmon/yearqtr) but the 'zoo' package is not installed. Please install.packages('zoo').",
+        class = c("econanalyzr_validation_error", "econ_df_missing_zoo")
+      )
+    }
+    if (inherits(date_col, "yearmon")) {
+      df[["date"]] <- zoo::as.Date(date_col, frac = 0)
+      src <- "yearmon"
+    } else { # yearqtr
+      df[["date"]] <- zoo::as.Date(date_col, frac = 0)
+      src <- "yearqtr"
+    }
+    rlang::warn(
+      glue::glue("Column 'date' is {src}; coercing to 'Date' at the start of the period (first day)."),
+      class = "econ_df_period_coerced_to_Date"
+    )
+    class(df[["date"]]) <- "Date"
+
   } else if (inherits(date_col, "POSIXct") || inherits(date_col, "POSIXlt")) {
     # Drop time-of-day deterministically via `datetime_tz`
     rlang::warn(
@@ -122,16 +152,15 @@ check_econanalyzr_df <- function(df, datetime_tz = "UTC") {
       class = "econ_df_datetime_coerced_to_Date"
     )
     df[["date"]] <- as.Date(date_col, tz = datetime_tz)
+
   } else {
     rlang::abort(
-      "Column 'date' must be a 'Date' (or subclass) or a POSIXct/POSIXlt convertible to 'Date'.",
+      "Column 'date' must be a 'Date' (or subclass), a 'zoo' period (yearmon/yearqtr), or a POSIXct/POSIXlt convertible to 'Date'.",
       class = c("econanalyzr_validation_error", "econ_df_bad_date_type")
     )
   }
 
   ## Special handling for 'value' — check the column directly ---------------------
-  # Must be double; if numeric-but-not-double (e.g., integer, integer64, or other numeric class),
-  # warn and coerce to double. If non-numeric, error.
   vcol <- df[["value"]]
 
   # If double but has extra/other classes, strip to plain numeric with a warning
@@ -160,7 +189,6 @@ check_econanalyzr_df <- function(df, datetime_tz = "UTC") {
   }
 
   ## Validate typeof()/class() for the first 9 columns ----------------------------
-  # (Validate after reorder/normalization/coercions so positions/spec match the current state)
   actual_type  <- vapply(req_names, function(nm) typeof(df[[nm]]),  character(1))
   actual_class <- vapply(req_names, function(nm) class(df[[nm]])[1], character(1))
 
@@ -182,7 +210,6 @@ check_econanalyzr_df <- function(df, datetime_tz = "UTC") {
   ## Final column must be 'viz_type_text' and character ---------------------------
   last_name <- names(df)[ncol(df)]
   if (!identical(last_name, "viz_type_text")) {
-    # Extremely defensive (should be fixed by reorder), but keep it explicit.
     rlang::abort(
       "The last column must be named 'viz_type_text'.",
       class = c("econanalyzr_validation_error", "econ_df_bad_last_name")
