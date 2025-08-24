@@ -15,7 +15,7 @@
 #' @return A character vector of sanitized filename stems, same length as `x`.
 #'
 #' @keywords internal
-#' @noRd
+#' @rdname econanalyzr-viz-helpers
 sanitize_filename <- function(x) {
   x_na <- is.na(x)
   y <- tolower(as.character(x))

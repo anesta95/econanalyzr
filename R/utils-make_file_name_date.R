@@ -7,7 +7,7 @@
 #' @param date_vec A Date vector (POSIXt allowed; coerced to Date).
 #' @return A character stem like `"2025-05-01"` or `"2025-05-01_2021-05-01"`.
 #' @keywords internal
-#' @noRd
+#' @rdname econanalyzr-viz-helpers
 make_file_name_date <- function(date_vec) {
   # Accept Date; allow POSIXt but coerce to Date (drop time)
   if (inherits(date_vec, "POSIXct") || inherits(date_vec, "POSIXlt")) {

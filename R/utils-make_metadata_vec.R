@@ -5,7 +5,7 @@
 #' @param warn_all_na If TRUE, warn when a column is all NA.
 #' @return Character vector of tokens in column order.
 #' @keywords internal
-#' @noRd
+#' @rdname econanalyzr-viz-helpers
 make_metadata_vec <- function(df_text, na_token = "na", warn_all_na = TRUE) {
   stopifnot(is.data.frame(df_text))
   nms <- names(df_text)

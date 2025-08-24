@@ -16,6 +16,7 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Imports: 
+    ggplot2,
     glue,
     httr2,
     readr,
@@ -23,6 +24,8 @@ Imports:
     tibble,
     vctrs
 Suggests: 
+    ragg,
+    svglite,
     testthat (>= 3.0.0),
     webfakes
 Config/testthat/edition: 3
