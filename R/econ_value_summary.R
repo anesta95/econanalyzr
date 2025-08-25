@@ -15,8 +15,8 @@
 #'   are included/excluded per `filter_type`. `POSIXt` is coerced to `Date` using `dates_tz`.
 #' @param date_range Optional length-2 `Date`/`POSIXt` giving a closed range
 #'   `[min(date_range), max(date_range)]`. Ignored if `dates` is provided.
-#' @param val_col Column to operate on (must be numeric): tidy-select name or numeric position.
-#'   Defaults to `value`.
+#' @param val_col Column to operate on (must be numeric): tidy-select name.
+#'   Defaults to column name `value` that is standard with econanalyzr data frames.
 #' @param filter_type `"inclusive"` (keep matches) or `"exclusive"` (drop matches).
 #' @param .fun A function (or function name) applied to the pulled vector, e.g. `mean`,
 #'   `median`, or `function(x) stats::quantile(x, c(.25,.5,.75))`.
@@ -56,7 +56,7 @@ econ_value_summary <- function(
     df,
     dates       = NULL,
     date_range  = NULL,
-    val_col     = value,
+    val_col     = "value",
     filter_type = c("inclusive", "exclusive"),
     .fun        = mean,
     na_rm       = TRUE,
@@ -69,12 +69,19 @@ econ_value_summary <- function(
   # 1) Validate econanalyzr schema early ---------------------------------------
   df <- check_econanalyzr_df(df)
 
-  # 2) Validate filters ---------------------------------------------------------
+  # 2) Validate filters & value ---------------------------------------------------------
   if (!is.null(dates) && !is.null(date_range)) {
     rlang::abort(
       "`dates` and `date_range` cannot both be supplied.",
       class = "econ_value_summary_conflicting_filters"
     )
+  }
+
+  val_sym  <- rlang::ensym(val_col)
+  val_name <- rlang::as_string(val_sym)
+  if (!val_name %in% names(df)) {
+    rlang::abort(paste0("Column '", val_name, "' not found in `df`."),
+                 class = "econ_value_summary_bad_val_col")
   }
 
   # Coerce/validate dates if supplied
@@ -116,7 +123,7 @@ econ_value_summary <- function(
   df_filtered <- df[keep, , drop = FALSE]
 
   # 3) Pull the target column (supports name or index); must be numeric ---------
-  vals <- dplyr::pull(df_filtered, {{ val_col }})
+  vals <- dplyr::pull(df_filtered, {{ val_sym }})
   if (!is.numeric(vals)) {
     rlang::abort(
       "Selected `val_col` must be numeric.",

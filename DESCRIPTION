@@ -23,6 +23,7 @@ Imports:
     lubridate,
     readr,
     rlang,
+    slider,
     tibble,
     vctrs
 Suggests: 

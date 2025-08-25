@@ -37,7 +37,7 @@
 #' @importFrom rlang abort inform is_integerish
 #' @importFrom glue glue
 #' @importFrom dplyr arrange filter
-#' @importFrom lubridate days weeks months years %m-%
+#' @importFrom lubridate days weeks years %m-%
 econ_filter_dates <- function(
     df,
     start_date    = NULL,
@@ -95,8 +95,8 @@ econ_filter_dates <- function(
       period_type,
       days     = end_date - lubridate::days(period_amount),
       weeks    = end_date - lubridate::weeks(period_amount),
-      months   = end_date %m-% lubridate::months(period_amount),
-      quarters = end_date %m-% lubridate::months(3L * period_amount),
+      months   = end_date %m-% base::months(period_amount),
+      quarters = end_date %m-% base::months(3L * period_amount),
       years    = end_date %m-% lubridate::years(period_amount)
     )
   } else {

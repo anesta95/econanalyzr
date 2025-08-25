@@ -33,30 +33,38 @@
 #' create_index(x, idx_pos = "b")        # base-100 index with "b" as base
 #' create_index(x, idx_pos = "b", idx_type = 0)  # percent change from "b"
 create_index <- function(num_vec, idx_pos = 1, idx_type = 100) {
+  # Detect usable names (for optional name-based lookup) -----------------------
+  n  <- length(num_vec)
+  nm <- names(num_vec)
+  has_names <- !is.null(nm) && any(!is.na(nm)) && any(nzchar(nm))
+
+
   # Validate num_vec -----------------------------------------------------------
-  if (!is.numeric(num_vec) || length(num_vec) < 2L) {
+  if (!is.numeric(num_vec) || n < 2L) {
     rlang::abort(
       class   = "create_index_bad_num_vec",
       message = "`num_vec` must be a numeric vector of length > 1."
     )
   }
 
-  # Detect usable names (for optional name-based lookup) -----------------------
-  nm <- names(num_vec)
-  has_names <- !is.null(nm) && any(!is.na(nm)) && any(nzchar(nm))
-
   # Resolve idx_pos to a single base index ------------------------------------
   base_idx <- NULL
 
   # Case A: numeric position (prefer direct resolution after guarding)
   if (is.numeric(idx_pos) && length(idx_pos) == 1L) {
-    if (!is.finite(idx_pos) || idx_pos %% 1 != 0 || idx_pos < 1 || idx_pos > length(num_vec)) {
+    if (!rlang::is_integerish(idx_pos, n = 1, finite = TRUE)) {
       rlang::abort(
-        "`idx_pos` must be a single 1-based whole number within 1..length(num_vec).",
+        "`idx_pos` must be a single 1-based whole number.",
         class = "create_index_bad_idx_pos"
       )
     }
     base_idx <- as.integer(idx_pos)
+    if (base_idx < 1L || base_idx > n) {
+      rlang::abort(
+        glue::glue("`idx_pos` must be between 1 and {n}."),
+        class = "create_index_bad_idx_pos"
+      )
+    }
   }
 
   # Case B: character name (only if names exist)
@@ -78,13 +86,13 @@ create_index <- function(num_vec, idx_pos = 1, idx_type = 100) {
   # Case C: fallback (rare types; keep vec_as_location as a safety net)
   if (is.null(base_idx)) {
     base_idx <- tryCatch(
-      vctrs::vec_as_location(idx_pos, n = length(num_vec), names = if (has_names) nm else NULL),
+      vctrs::vec_as_location(idx_pos, n = n, names = if (has_names) nm else NULL),
       error = function(cnd) {
         rlang::abort(
           if (has_names)
-            glue::glue("`idx_pos` must be a single 1-based index (1..{length(num_vec)}) or a single existing name.")
+            glue::glue("`idx_pos` must be a single 1-based index (1..{n}) or a single existing name.")
           else
-            glue::glue("`idx_pos` must be a single 1-based index within 1..{length(num_vec)} (vector is unnamed)."),
+            glue::glue("`idx_pos` must be a single 1-based index within 1..{n} (vector is unnamed)."),
           class  = "create_index_bad_idx_pos",
           parent = cnd
         )

@@ -8,7 +8,7 @@ econ_value_summary(
   df,
   dates = NULL,
   date_range = NULL,
-  val_col = value,
+  val_col = "value",
   filter_type = c("inclusive", "exclusive"),
   .fun = mean,
   na_rm = TRUE,
@@ -26,8 +26,8 @@ are included/excluded per \code{filter_type}. \code{POSIXt} is coerced to \code{
 \item{date_range}{Optional length-2 \code{Date}/\code{POSIXt} giving a closed range
 \verb{[min(date_range), max(date_range)]}. Ignored if \code{dates} is provided.}
 
-\item{val_col}{Column to operate on (must be numeric): tidy-select name or numeric position.
-Defaults to \code{value}.}
+\item{val_col}{Column to operate on (must be numeric): tidy-select name.
+Defaults to column name \code{value} that is standard with econanalyzr data frames.}
 
 \item{filter_type}{\code{"inclusive"} (keep matches) or \code{"exclusive"} (drop matches).}
 

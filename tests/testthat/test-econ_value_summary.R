@@ -135,15 +135,6 @@ test_that("non-numeric val_col is rejected with classed error", {
   )
 })
 
-test_that("val_col may be selected by numeric position", {
-  # WHY: allow tidy-select by position as well as by name.
-  df <- .valid_econ_df(3L)
-  # In schema, 'value' is column #3; sum with NA removal by default.
-  out <- econanalyzr::econ_value_summary(
-    df, dates = df$date, val_col = 3L, .fun = sum
-  )
-  expect_equal(out, sum(df$value, na.rm = TRUE))
-})
 
 test_that("NA handling: na_rm=TRUE removes NA before function call", {
   # WHY: confirm NA removal happens *before* calling .fun, so .fun needn't support na.rm.
