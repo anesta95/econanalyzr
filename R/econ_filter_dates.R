@@ -1,4 +1,4 @@
-#' Filter rows by a closed date interval (econanalyzr data; non-grouped)
+#' Filter rows in an econanalyzr data frame by a closed date interval
 #'
 #' Filters an econanalyzr-valid data frame by a **closed** date interval
 #' `[start_date, end_date]`. If `start_date` is not supplied, you can specify a

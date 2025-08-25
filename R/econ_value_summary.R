@@ -1,4 +1,4 @@
-#' Apply a function to a numeric column after date filtering (econanalyzr data)
+#' Apply a function to an econanalyzr data frame's numeric column after date filtering
 #'
 #' Filters an econanalyzr-valid data frame by either a set of membership dates
 #' (`dates`) or a closed range (`date_range`), pulls a **numeric** column, and

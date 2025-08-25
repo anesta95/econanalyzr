@@ -2,7 +2,7 @@
 % Please edit documentation in R/econ_filter_dates.R
 \name{econ_filter_dates}
 \alias{econ_filter_dates}
-\title{Filter rows by a closed date interval (econanalyzr data; non-grouped)}
+\title{Filter rows in an econanalyzr data frame by a closed date interval}
 \usage{
 econ_filter_dates(
   df,

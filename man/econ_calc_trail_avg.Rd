@@ -2,7 +2,7 @@
 % Please edit documentation in R/econ_calc_trail_avg.R
 \name{econ_calc_trail_avg}
 \alias{econ_calc_trail_avg}
-\title{Append trailing-average rows (long form), respecting existing groups}
+\title{Append trailing-average rows in long form to econanalyzr data frame}
 \usage{
 econ_calc_trail_avg(df, trail_amount)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/econ_value_summary.R
 \name{econ_value_summary}
 \alias{econ_value_summary}
-\title{Apply a function to a numeric column after date filtering (econanalyzr data)}
+\title{Apply a function to an econanalyzr data frame's numeric column after date filtering}
 \usage{
 econ_value_summary(
   df,

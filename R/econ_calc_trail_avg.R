@@ -1,4 +1,4 @@
-#' Append trailing-average rows (long form), respecting existing groups
+#' Append trailing-average rows in long form to econanalyzr data frame
 #'
 #' Computes a trailing (right-aligned) moving average of `value` and **appends**
 #' those rows to the original data (long form).
