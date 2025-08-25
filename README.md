@@ -217,48 +217,62 @@ create_diffusion_index(pct_change = c(NA_real_, NA_real_), idx_type = "Conferenc
 ## `econanalyzr` Tibble Structure and Functions
 
 Every econ analysis data CSV file at minimum will have the following
-columns: \* `date`: The date associated with the data in the data row.
-The date will be in `YYYY-MM-DD` format regardless of the time period
-the date captures. All dates will be the first day of the time period.
-For example, data for April 2025 will be displayed as `2025-04-01`. Data
-for Q2 2025 will be `2025-04-01`. Data for the year 2025 will be
-`2025-01-01`. This will have a data type `double` with a class of
-`Date`. \* `date_period_text`: The time period that each row of the data
-captures. The most common formats are `Monthly`, `Quarterly`, and
-`Annually`. This will have a data type and class of `character`. \*
-`value`: The value that is being measured in the data. This will have a
-data type of `double` and a class of `numeric`. \* `data_element_text`:
-What the data in the `value` column describes. This will have a data
-type and class of `character`. \* `data_measure_text`: The mathematical
-expression the data in the `value` column is expressed as. The most
-common are `Level`, `Rate`, `Ratio`, `Percentage`, `Proportion`, and
-`Index`. This will have a data type and class of `character`. \*
-`date_measure_text`: The change in dates measured by the data in the
-`value` column. The most common are `Current`, `Year-over-year`,
-`Month-over-month` and `Quarter-over-quarter`. This will have a data
-type and class of `character`. \* `data_transform_text`: Any
-mathematical transformations applied to the data. The most common are
-`Raw`, `Percent change`, `Annualized`, `Trail N` where `N` is a number
-of periods in the `date_period_text` column. There can be multiple
-transformations for each row. Transformations are delimited by
-semi-colons `;` and are stated *in order of transformation*. For
-example, `Trail 3;Percent change` will be the percentage change between
-the trailing 3 period average of the current period — denoted in the
-`date` column — and the trailing 3 period average of the previous period
-which is deduced from the `date_measure_text`. Conversely,
-`Percent change;Trail 3` will be the trailing 3 period average applied
-to the percentage change between the current period and the previous
-period across the data series. This will have a data type and class of
-`character`. \* `geo_entity_type_text`: The geographic entity *type* the
-data in the `value` column is covering. This will have a data type and
-class of `character`. If the region is in the United States there is a
-good chance it will be within the [Census Bureau Geographic Entity
-Hierarchy](https://www2.census.gov/geo/pdfs/reference/geodiagram.pdf).
-\* `geo_entity_text`: The name(s) geographic entity/entities that are
-described by the data. \* `viz_type_text`: The type of visualization
-made by the data in the `value` column. The most common are
-`Time series line`, `Bar`, `Map`, and `Scatter`. This will have a data
-type and class of `character`.
+columns:
+
+- `date`: The date associated with the data in the data row. The date
+  will be in `YYYY-MM-DD` format regardless of the time period the date
+  captures. All dates will be the first day of the time period. For
+  example, data for April 2025 will be displayed as `2025-04-01`. Data
+  for Q2 2025 will be `2025-04-01`. Data for the year 2025 will be
+  `2025-01-01`. This will have a data type `double` with a class of
+  `Date`.
+
+- `date_period_text`: The time period that each row of the data
+  captures. The most common formats are `Monthly`, `Quarterly`, and
+  `Annually`. This will have a data type and class of `character`.
+
+- `value`: The value that is being measured in the data. This will have
+  a data type of `double` and a class of `numeric`.
+
+- `data_element_text`: What the data in the `value` column describes.
+  This will have a data type and class of `character`.
+
+- `data_measure_text`: The mathematical expression the data in the
+  `value` column is expressed as. The most common are `Level`, `Rate`,
+  `Ratio`, `Percentage`, `Proportion`, and `Index`. This will have a
+  data type and class of `character`.
+
+- `date_measure_text`: The change in dates measured by the data in the
+  `value` column. The most common are `Current`, `Year-over-year`,
+  `Month-over-month` and `Quarter-over-quarter`. This will have a data
+  type and class of `character`.
+
+- `data_transform_text`: Any mathematical transformations applied to the
+  data. The most common are `Raw`, `Percent change`, `Annualized`,
+  `Trail N` where `N` is a number of periods in the `date_period_text`
+  column. There can be multiple transformations for each row.
+  Transformations are delimited by semi-colons `;` and are stated *in
+  order of transformation*. For example, `Trail 3;Percent change` will
+  be the percentage change between the trailing 3 period average of the
+  current period — denoted in the `date` column — and the trailing 3
+  period average of the previous period which is deduced from the
+  `date_measure_text`. Conversely, `Percent change;Trail 3` will be the
+  trailing 3 period average applied to the percentage change between the
+  current period and the previous period across the data series. This
+  will have a data type and class of `character`.
+
+- `geo_entity_type_text`: The geographic entity *type* the data in the
+  `value` column is covering. This will have a data type and class of
+  `character`. If the region is in the United States there is a good
+  chance it will be within the [Census Bureau Geographic Entity
+  Hierarchy](https://www2.census.gov/geo/pdfs/reference/geodiagram.pdf).
+
+- `geo_entity_text`: The name(s) geographic entity/entities that are
+  described by the data.
+
+- `viz_type_text`: The type of visualization made by the data in the
+  `value` column. The most common are `Time series line`, `Bar`, `Map`,
+  and `Scatter`. This will have a data type and class of `character`.
 
 ### Naming conventions
 
@@ -515,7 +529,7 @@ df <- tibble::tibble(
 outdir <- tempdir()
 path <- econanalyzr::econ_csv_write_out(df, folder = outdir, overwrite = TRUE)
 #> Wrote CSV:
-#> /tmp/Rtmpj4FH7d/2025-06-01_2025-01-01-monthly-quits_rate-percent-monthly-sa-nation-us-line.csv
+#> /tmp/RtmpWy7l0k/2025-06-01_2025-01-01-monthly-quits_rate-percent-monthly-sa-nation-us-line.csv
 
 basename(path)
 #> [1] "2025-06-01_2025-01-01-monthly-quits_rate-percent-monthly-sa-nation-us-line.csv"
