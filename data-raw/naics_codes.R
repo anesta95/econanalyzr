@@ -4,27 +4,8 @@ suppressPackageStartupMessages(library(dplyr))
 library(purrr)
 library(stringr)
 library(tibble)
-
-# Data from: https://www.census.gov/naics/?48967 or https://www.census.gov/naics/?48967#downloadables-tab
-
-## NAICS Code Section ##
-# Each line is an individual NAICS code
-# Columns:
-# 1. year
-# 2. code
-# 3. code_title
-# 4. code_desc
-# 5. code_type: 2 digit: sector, 3 digit: subsector, 4 digit: industry group, 5 digit: NAICS industry, 6 digit: national industry
-# Reference: https://www.bea.gov/help/faq/19
-# 6. supersector_code
-# References: https://www.bls.gov/sae/additional-resources/naics-supersectors-for-ces-program.htm & https://www.bls.gov/iag/tgs/iag_index_naics.htm
-# 7. supersector_title
-# 8. qcew_code
-# Reference: https://www.bls.gov/cew/classifications/industry/industry-supersectors.htm
-# 9. change_desc
-# 10. trilateral_agreement:
-# References: https://www.federalregister.gov/documents/2021/12/21/2021-27536/north-american-industry-classification-system-revision-for-2022-update-of-statistical-policy
-# and https://www.census.gov/naics/reference_files_tools/2022_NAICS_Manual.pdf and https://unstats.un.org/unsd/classifications/Sprint/Webinar2/Session3_Pres1_Canada.pdf
+library(readr)
+library(tidyr)
 
 # Function to create tempfile and download sheet into it:
 download_into_tmpfile <- function(url) {
@@ -36,19 +17,19 @@ download_into_tmpfile <- function(url) {
   fileext <- nth(file_pattern_extension, 2)
 
   # Create the tempfile
-  temp_excel <- tempfile(
+  temp_data_file <- tempfile(
     pattern = pattern,
     fileext = fileext
   )
   # Download the file into the tempfile
   download.file(
     url = url,
-    destfile = temp_excel,
+    destfile = temp_data_file,
     method = "wget",
     extra = c("-U 'Mozilla 5.0'")
   )
 
-  return(temp_excel)
+  return(temp_data_file)
 
 }
 
@@ -260,7 +241,7 @@ temp_idx_2012 <- download_into_tmpfile(
 )
 
 naics_desc_2012 <- read_excel(
-  path = temp_cross_ref_2012,
+  path = temp_idx_2012,
   range = "2012NAICS!A2:B19256",
   col_names = c("code", "code_desc"),
   col_types = c("text", "text"),
@@ -269,7 +250,7 @@ naics_desc_2012 <- read_excel(
   summarize(code_desc = reduce(.x = code_desc, .f = paste))
 
 # Filling other fields in with NA since they are missing
-naics_2012 <- inner_join(naics_2_6_2012, naics_desc_2012, by = "code") |>
+naics_2012 <- left_join(naics_2_6_2012, naics_desc_2012, by = "code") |>
   mutate(
     code_cross_ref = NA_character_,
     change_desc = NA_character_,
@@ -287,7 +268,7 @@ temp_2_6_2007 <- download_into_tmpfile(
 
 naics_2_6_2007 <- read_excel(
   path = temp_2_6_2007,
-  range = "tbl_2012_title_description_coun!A3:C2330",
+  range = "tbl_2007_title_description_coun!A3:C2330",
   col_names = c("seq_no", "code", "code_title"),
   col_types = c("text", "text", "text"),
 ) |>
@@ -309,7 +290,7 @@ temp_idx_2007 <- download_into_tmpfile(
 )
 
 naics_desc_2007 <- read_excel(
-  path = temp_cross_ref_2007,
+  path = temp_idx_2007,
   range = "2007NAICS!A2:B19721",
   col_names = c("code", "code_desc"),
   col_types = c("text", "text"),
@@ -318,7 +299,7 @@ naics_desc_2007 <- read_excel(
   summarize(code_desc = reduce(.x = code_desc, .f = paste))
 
 # Filling other fields in with NA since they are missing
-naics_2007 <- inner_join(naics_2_6_2007, naics_desc_2007, by = "code") |>
+naics_2007 <- left_join(naics_2_6_2007, naics_desc_2007, by = "code") |>
   mutate(
     code_cross_ref = NA_character_,
     change_desc = NA_character_,
@@ -335,15 +316,15 @@ temp_2_6_2002 <- download_into_tmpfile(
 naics_2_6_2002 <- read_lines(
   file = temp_2_6_2002
 ) |>
-  keep(\(x) str_detect("^\\s*\\d{2,6}\\s+\\S")) |>
+  keep(\(x) str_detect(x, "^\\s*\\d{2,6}(?:-\\d{2,6})?\\s+\\S")) |>
   (\(x) {
     tibble(raw = x) |>
       transmute(
-        code  = str_match(raw, "^\\s*(\\d{2,6})\\s+")[, 2],
-        code_title = str_match(raw, "^\\s*\\d{2,6}\\s+(.+?)\\s*$")[, 2]
+        code  = str_match(raw, "^\\s*(\\d{2,6}(?:-\\d{2,6})?)\\s+")[, 2],
+        code_title = str_match(raw, "^\\s*\\d{2,6}(?:-\\d{2,6})?\\s+(.+?)\\s*$")[, 2]
       )
   })() |>
-  mutate(year = "2007", .before = seq_no) |>
+  mutate(year = "2002", .before = code) |>
   mutate(
     code_type = case_when(
       nchar(code) == 2L ~ "Sector",
@@ -363,6 +344,49 @@ naics_2002 <- naics_2_6_2002 |>
     trilateral_agreement = NA
   )
 
-naics_codes <- list_rbind(list(naics_2022, naics_2017, naics_2012, naics_2007, naics_2002))
+# Filling in the CES and QCEW supersector codes with these resources
+# https://www.bls.gov/sae/additional-resources/naics-supersectors-for-ces-program.htm
+# https://www.bls.gov/cew/classifications/industry/industry-supersectors.htm
+
+naics_codes <- list_rbind(list(naics_2022, naics_2017, naics_2012, naics_2007, naics_2002)) |>
+  mutate(
+    code_sector = if_else(code %in% c("31-33", "44-45", "48-49"), code, str_sub(code, 1, 2)),
+    case = case_when(
+      code_sector %in% c("11", "21") ~ list(tibble(ces_supersector_code = "10", qcew_supersector_code = "1011", ces_domain_code = "06", qcew_domain_code = "101", supersector_title = "Natural Resources and Mining", domain_title = "Goods-Producing")),
+      code_sector == "23" ~ list(tibble(ces_supersector_code = "20", qcew_supersector_code = "1012", ces_domain_code = "06", qcew_domain_code = "101", supersector_title = "Construction", domain_title = "Goods-Producing")),
+      code_sector %in% c("31", "32", "33", "31-33") ~ list(tibble(ces_supersector_code = "30", qcew_supersector_code = "1013", ces_domain_code = "06", qcew_domain_code = "101", supersector_title = "Manufacturing", domain_title = "Goods-Producing")),
+      code_sector %in% c("42", "44", "45", "44-45", "48", "49", "48-49", "22") ~ list(tibble(ces_supersector_code = "40", qcew_supersector_code = "1021", ces_domain_code = "07", qcew_domain_code = "102", supersector_title = "Trade, Transportation, and Utilities", domain_title = "Service-Producing")),
+      code_sector == "51" ~ list(tibble(ces_supersector_code = "50", qcew_supersector_code = "1022", ces_domain_code = "07", qcew_domain_code = "102", supersector_title = "Information", domain_title = "Service-Producing")),
+      code_sector %in% c("52", "53") ~ list(tibble(ces_supersector_code = "55", qcew_supersector_code = "1023", ces_domain_code = "07", qcew_domain_code = "102", supersector_title = "Financial Activities", domain_title = "Service-Producing")),
+      code_sector %in% c("54", "55", "56") ~ list(tibble(ces_supersector_code = "60", qcew_supersector_code = "1024", ces_domain_code = "07", qcew_domain_code = "102", supersector_title = "Professional and Business Services", domain_title = "Service-Producing")),
+      code_sector %in% c("61", "62") ~ list(tibble(ces_supersector_code = "65", qcew_supersector_code = "1025", ces_domain_code = "07", qcew_domain_code = "102", supersector_title = "Education and Health Services", domain_title = "Service-Producing")),
+      code_sector %in% c("71", "72") ~ list(tibble(ces_supersector_code = "70", qcew_supersector_code = "1026", ces_domain_code = "07", qcew_domain_code = "102", supersector_title = "Leisure and Hospitality", domain_title = "Service-Producing")),
+      code_sector == "81" ~ list(tibble(ces_supersector_code = "80", qcew_supersector_code = "1027", ces_domain_code = "07", qcew_domain_code = "102", supersector_title = "Other Services", domain_title = "Service-Producing")),
+      code_sector == "92" ~ list(tibble(ces_supersector_code = "90", qcew_supersector_code = "1028", ces_domain_code = "07", qcew_domain_code = "102", supersector_title = "Public Administration", domain_title = "Service-Producing")),
+      code_sector == "99" ~ list(tibble(ces_supersector_code = "99", qcew_supersector_code = "1029", ces_domain_code = "07", qcew_domain_code = "102", supersector_title = "Unclassified", domain_title = "Service-Producing"))
+    )
+  ) |>
+  unnest(cols = case) |>
+  mutate(across(where(is.character), ~iconv(x = .x, to = "ASCII")))
 
 usethis::use_data(naics_codes, overwrite = TRUE)
+
+# Additional data notes:
+# code_type: 2 digit: sector, 3 digit: subsector, 4 digit: industry group, 5 digit: NAICS industry, 6 digit: national industry
+# Reference: https://www.bea.gov/help/faq/19
+# trilateral_agreement:
+# References: https://www.federalregister.gov/documents/2021/12/21/2021-27536/north-american-industry-classification-system-revision-for-2022-update-of-statistical-policy
+# and https://www.census.gov/naics/reference_files_tools/2022_NAICS_Manual.pdf and https://unstats.un.org/unsd/classifications/Sprint/Webinar2/Session3_Pres1_Canada.pdf
+
+
+## BLS NAICS Resources ##
+# QCEW industry supersectors: https://www.bls.gov/cew/classifications/industry/industry-supersectors.htm
+# Industry classification used by QCEW: https://www.bls.gov/cew/classifications/industry/home.htm
+# QCEW industry codes and titles: https://data.bls.gov/cew/doc/titles/industry/industry_titles.htm
+# QCEW NAICS hierarchy crosswalk: https://www.bls.gov/cew/classifications/industry/qcew-naics-hierarchy-crosswalk.htm
+# BLS & QCEW NAICS differences: https://www.bls.gov/cew/additional-resources/bls-and-qcew-naics-differences.htm
+# QCEW industry finder: https://data.bls.gov/cew/apps/bls_naics/v3/bls_naics_app.htm
+# Industries by Supersector and NAICS Code: https://www.bls.gov/iag/tgs/iag_index_naics.htm
+# CES NAICS Supersectors: https://www.bls.gov/sae/additional-resources/naics-supersectors-for-ces-program.htm
+
+

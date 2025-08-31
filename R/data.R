@@ -1,0 +1,25 @@
+#' North American Industry Classification System data
+#'
+#' A reference file of industry and sector data for each NAICS code from 2002 to 2022
+#'
+#' @format ## `naics_codes`
+#' A data frame with 11,186 rows and 15 columns:
+#' \describe{
+#'   \item{year}{Year of NAICS version. One of 2022, 2017, 2012, 2007, or 2002.}
+#'   \item{code}{The full NAICS code.}
+#'   \item{code_title}{A short description of the NAICS code.}
+#'   \item{code_type}{The type of NAICS code. One of Sector, Subsector, Industry Group, NAICS Industry, or National Industry. Corresponds to codes with character lengths of 2, 3, 4, 5, and 6, respectively.}
+#'   \item{code_desc}{A longer description of what types of businesses and industries are included in the NAICS code.}
+#'   \item{code_cross_ref}{Additional descriptive information of what types of businesses and industries are included in the NAICS code.}
+#'   \item{change_desc}{Supplementary information if the code title or industries included in the code have changed since the previous version of NAICS.}
+#'   \item{trilateral_agreement}{If code is included in the trilateral agreement between Canada, the U.S. and Mexico to be included in each country's industry classification.}
+#'   \item{code_sector}{The two-digit sector of the code.}
+#'   \item{ces_supersector_code}{The supersector code for the NAICS industry used by the BLS Current Employment Statistics (CES).}
+#'   \item{qcew_supersector_code}{The supersector code for the NAICS industry used by the BLS Quarterly Census of Employment and Wages (QCEW).}
+#'   \item{ces_domain_code}{The domain (goods-producing vs. service-producing) code used by the BLS Current Employment Statistics (CES).}
+#'   \item{qcew_domain_code}{The domain (goods-producing vs. service-producing) code used by the BLS Quarterly Census of Employment and Wages (QCEW).}
+#'   \item{supersector_title}{A short description of the supersector for the NAICS code.}
+#'   \item{domain_title}{One of Goods-Producing vs. Service-Producing}
+#' }
+#' @source <https://www.census.gov/naics/?48967>
+"naics_codes"
