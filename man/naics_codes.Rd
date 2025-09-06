@@ -3,7 +3,7 @@
 \docType{data}
 \name{naics_codes}
 \alias{naics_codes}
-\title{North American Industry Classification System data}
+\title{North American Industry Classification System Data}
 \format{
 \subsection{\code{naics_codes}}{
 
@@ -34,6 +34,6 @@ A data frame with 11,186 rows and 15 columns:
 naics_codes
 }
 \description{
-A reference file of industry and sector data for each NAICS code from 2002 to 2022
+A reference file of industry and sector data for each NAICS code from 2002 to 2022.
 }
 \keyword{datasets}
