@@ -1,6 +1,6 @@
 Package: econanalyzr
 Title: Helps You Analyze Economic Data
-Version: 0.0.0.9000
+Version: 1.0.0
 Authors@R: 
     person("Adrian", "Nesta", , "adriannesta@gmail.com", role = c("aut", "cre"))
 Description: This package provides a handful of functions that execute

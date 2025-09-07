@@ -1,4 +1,4 @@
-# econanalyzr (development version)
+# econanalyzr 1.0.0
 
 * Working on adding included data sets on for additional common economic codes
 from the [US Census Bureau](https://www.census.gov/library/reference/code-lists.html).
