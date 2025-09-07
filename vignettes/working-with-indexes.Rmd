@@ -1,0 +1,160 @@
+---
+title: "Calculating Indices"
+subtitle: "Calculating regular and diffusion indicies with `create_index()` and `create_diffusion_index()` from `{econanalyzr}`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{working-with-indexes}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+options(tibble.print_max = 5L)
+options(rmarkdown.html_vignette.check_title = FALSE)
+```
+## Introduction
+
+This vignette shows two common transformations for economic time series and survey-style data:
+* `create_index()`: turn a numeric vector into either a base-100 index (base value = 100) or a base-0 index (which mirrors percent change) (base value = 0).
+  * The base can be selected by _position_ or by _name_ if the vector is named.
+* `create_diffusion_index()`: compute a diffusion index from survey-style proportions of respondents increasing, decreasing, or unchanged. The methods the function can execute are:
+  * [Federal Reserve](https://www.richmondfed.org/-/media/richmondfedorg/publications/research/economic_quarterly/2004/fall/pdf/harrisowenssarte.pdf): (`pct_increased` - `pct_decreased`) * 100
+  * [IHS-PMI](https://cdn.ihsmarkit.com/www/pdf/1218/IHS-Markit-PMI-Introduction.pdf): (`pct_increased` + 0.5 * `pct_unchanged`) * 100
+  * [Conference Board](https://www.conference-board.org/data/bci/index.cfm?id=2180): encode each unit’s `pct_change` into 1 / 0.5 / 0 based on a threshold of .0005, then calculate the average and multiply it by 100.
+
+```{r setup, message = FALSE}
+library(econanalyzr)
+library(dplyr)
+library(tibble)
+```
+
+## Indexing with `create_index()`
+Basic usage on a numeric vector
+
+```{r}
+x <- c(10, 34, 46, 74, 83, 110, 129)
+
+# Base-100 index (default is to have base be the first element)
+idx_100 <- create_index(x)
+
+# Base-0 (this is effectively calculating the percentage change from base and multiplying by 100)
+idx_pct <- create_index(x, idx_type = 0)
+
+idx_100
+idx_pct
+```
+
+Selecting base by position or by name
+```{r}
+# By position: use the second element as the base
+idx_pos2 <- create_index(x, idx_pos = 2)
+
+# By name: works only if the vector is named
+x_named <- c(a = 10, b = 34, c = 46, d = 74, e = 83, f = 110, g = 129)
+idx_name_b_100 <- create_index(x_named, idx_pos = "b")          # base-100
+idx_name_b_pct <- create_index(x_named, idx_pos = "b", idx_type = 0)  # % from "b"
+
+idx_pos2
+idx_name_b_100
+idx_name_b_pct
+
+```
+
+Vectorization works within groups so it can be used inside of [dplyr::mutate()]
+to calculate indices.
+
+```{r}
+df_state <- tibble::tibble(
+  series = rep(c("US", "CA"), each = 5),
+  value  = c(80, 82, 85, 84, 90,   100, 98,  99, 101, 105)
+)
+
+# Base-100 per series (base = first value within each group)
+df_idx <- df_state %>%
+  group_by(series) %>%
+  mutate(index_100 = create_index(value)) %>%
+  ungroup()
+
+df_idx
+```
+
+## Diffusion indices with `create_diffusion_index()`
+Diffusion indices are commonly derived from survey responses and used as a way to gauge
+the _breadth_ and not the _amplitude_ of change in a collection of economic variables like employment, manufacturing, or other business conditions. 
+The `create_diffusion_index()` function provides three common vectorized ways way to calculate them.
+
+### Federal Reserve method
+Here the `pct_decreased` value is simply subtracted from the `pct_increased` value and then multiplied by 100. This index is centered on 0 where any number _above_ 0 indicates expansion or a positive reading and any number _below_ 0 is a contraction or negative reading. 
+```{r}
+fed <- create_diffusion_index(
+  pct_increased = c(0.60, 0.55, 0.50),
+  pct_decreased = c(0.20, 0.25, 0.30),
+  idx_type      = "Federal Reserve"
+)
+fed
+```
+
+## IHS-PMI method
+This is the sum of the `pct_increased` value and _half_ of the `pct_unchanged` value multiplied by 100. This index is centered on 50 where any number _above_ 50 indicates expansion or a positive reading and any number _below_ 50 is a contraction or negative reading. 
+
+For example, a diffusion index change of 53 to 59 is __accelerating growth__, a change from 59 to 51 is __decelerating growth__, a change from 51 to 44 is __accelerating contraction__, and a change from 44 to 49 is __decelerating contraction__.
+```{r}
+ihs <- create_diffusion_index(
+  pct_increased = c(0.55, 0.45, 0.52),
+  pct_unchanged = c(0.30, 0.35, 0.28),
+  idx_type      = "IHS-PMI"
+)
+ihs
+```
+
+## Conference Board method
+This method encodes each `pct_change` value as:
+* 1 if `pct_change` is greater than .0005.
+* 0.5 if `pct_change` is between -.0005 and .0005.
+* 0 if `pct_change` is less than -.0005.
+
+Then returns the _mean_ of the encoded values multiplied by 100.
+```{r}
+# Example: a small panel of unit-level percent changes for a month
+pct_change <- c(0.003, -0.002, 0.0002, 0.0, 0.0011)
+
+conf_board <- create_diffusion_index(
+  pct_change = pct_change,
+  idx_type   = "Conference Board"
+)
+conf_board
+
+```
+
+Since the functions are vectorized, they play nice in the tidy syntax in [tibble::tibble()]:
+
+```{r}
+survey <- tibble::tibble(
+  month         = as.Date(c("2025-01-01","2025-02-01","2025-03-01")),
+  pct_inc       = c(0.60, 0.55, 0.52),
+  pct_dec       = c(0.20, 0.22, 0.25),
+  pct_unch      = c(0.20, 0.23, 0.23)
+)
+
+survey |> 
+  transmute(
+    fed_idx = create_diffusion_index(
+      pct_inc, 
+      pct_dec, 
+      idx_type = "Federal Reserve"
+      ),
+    ihs_idx = create_diffusion_index(
+      pct_increased = pct_inc, 
+      pct_unchanged = pct_unch, 
+      idx_type = "IHS-PMI"
+      )
+  )
+
+```
+
+
+

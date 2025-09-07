@@ -1,0 +1,43 @@
+---
+title: "Retrieving Data From BLS Text File Database"
+subtitle: "Using `get_bls_data()` from `{econanalyzr}` package."
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{get-bls}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+options(tibble.print_max = 5L)
+options(rmarkdown.html_vignette.check_title = FALSE)
+```
+
+## Introduction
+
+This vignette describes the use of the `get_bls_data()` function. This is a wrapper around [httr2::request()] from the [httr2](https://httr2.r-lib.org/) package that also prompts you to supply a valid email address in the `user-agent` [HTTPS header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/User-Agent) as is now required by the BLS per their [terms of use](https://www.bls.gov/bls/blsterms.htm).
+
+```{r setup, message = FALSE}
+library(econanalyzr)
+```
+
+## Retrieving data
+
+A valid URL to a BLS flat/text file database must be supplied as well as a valid email to retrieve data. This example uses data from the [BLS Current Employment Statistics](https://www.bls.gov/ces/data/)
+
+```{r, eval = FALSE}
+valid_email <- "you@example.com"
+# Link to employment data for the Government sector
+bls_url <- "https://download.bls.gov/pub/time.series/ce/ce.data.90a.Government.Employment" 
+
+df <- get_bls_data(
+  bls_url = bls_url,
+  email = valid_email
+)
+```
+
+

@@ -1,0 +1,87 @@
+---
+title: "Change Over Time"
+subtitle: "Calculating change over time with `percent_change()` and `annualize_change()` from `{econanalyzr}`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{calc-change-over-time}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+options(tibble.print_max = 5L)
+options(rmarkdown.html_vignette.check_title = FALSE)
+```
+## Introduction
+
+This vignette demonstrates how to compute change over time with two core functions:
+
+* `percent_change(start_value, end_value)`: computes the simple relative change.
+* `annualize_change(start_values, end_values, time_elapsed, time_unit, year_length = 365.2425)`: converts growth over a period to an annualized rate.
+
+```{r setup, message = FALSE}
+library(econanalyzr)
+library(tibble)
+library(dplyr)
+```
+
+A small monthly time series to illustrate computations:
+
+```{r}
+set.seed(42)
+
+df <- tibble::tibble(
+  date  = seq(as.Date("2025-01-01"), by = "month", length.out = 12),
+  value = round(100 * cumprod(1 + rnorm(12, mean = 0.01, sd = 0.01)), 2)
+)
+
+df
+```
+
+## Percent Change
+`percent_change()` expects starting _and_ ending values. A natural workflow is using
+[dplyr::lag()] to use different values in the same vector in a vectorized manner:
+
+```{r}
+df_pct <- df |> 
+  arrange(date) |> 
+  mutate(
+    # vectorized, preserves NA on first row
+    pct_mom = percent_change(lag(value), value)
+  )
+
+df_pct |> select(date, value, pct_mom)
+
+```
+
+## Annualized Change
+The `annualize_change()` function is versatile enough to be able to calculate the annualized change for differing time _units_ (e.g. monthly, weekly, daily) as well as _periods_ of those units. This also plays nicely with [dplyr::lag()]:
+
+### Annualized rates from 1-month and 3-month intervals.
+
+```{r}
+df_ann <- df |> 
+  arrange(date) |> 
+  mutate(
+    ann_1m = annualize_change(
+      lag(value), 
+      value, 
+      time_elapsed = 1, 
+      time_unit = "monthly"
+      ),
+    ann_3m = annualize_change(
+      lag(value, 3), 
+      value, 
+      time_elapsed = 3, 
+      time_unit = "monthly"
+      )
+  )
+
+df_ann |> select(date, value, ann_1m, ann_3m)
+```
+

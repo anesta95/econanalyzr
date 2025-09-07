@@ -18,7 +18,7 @@ These are some of the most commonly used functions currently available:
   BLS site with a valid user-supplied email to download TSV data from
   their flat file database.
 - `percent_change()` which calculates the percentage change between two
-  numeric scalars or vectors
+  numeric scalars or vectors.
 - `annualize_change()` which calculate the annualized rate of change
   between two numeric scalars or vectors for a given time period.
 - `create_index()` which calculates a 0 or 100-based index version of a
@@ -38,8 +38,9 @@ You can install the development version of econanalyzr from
 [GitHub](https://github.com/) with:
 
 ``` r
-# install.packages("pak")
 pak::pak("anesta95/econanalyzr")
+# or
+devtools::install_github("anesta95/econanalyzr")
 ```
 
 ## Data Import Examples
@@ -57,12 +58,12 @@ bls_jolts <- get_bls_data(
   )
 
 str(bls_jolts)
-#> spc_tbl_ [606,736 × 5] (S3: spec_tbl_df/tbl_df/tbl/data.frame)
-#>  $ series_id     : chr [1:606736] "JTS000000000000000HIL" "JTS000000000000000HIL" "JTS000000000000000HIL" "JTS000000000000000HIL" ...
-#>  $ year          : chr [1:606736] "2000" "2001" "2001" "2001" ...
-#>  $ period        : chr [1:606736] "M12" "M01" "M02" "M03" ...
-#>  $ value         : chr [1:606736] "5426" "5722" "5303" "5528" ...
-#>  $ footnote_codes: chr [1:606736] NA NA NA NA ...
+#> spc_tbl_ [607,649 × 5] (S3: spec_tbl_df/tbl_df/tbl/data.frame)
+#>  $ series_id     : chr [1:607649] "JTS000000000000000HIL" "JTS000000000000000HIL" "JTS000000000000000HIL" "JTS000000000000000HIL" ...
+#>  $ year          : chr [1:607649] "2000" "2001" "2001" "2001" ...
+#>  $ period        : chr [1:607649] "M12" "M01" "M02" "M03" ...
+#>  $ value         : chr [1:607649] "5426" "5722" "5303" "5528" ...
+#>  $ footnote_codes: chr [1:607649] NA NA NA NA ...
 #>  - attr(*, "spec")=
 #>   .. cols(
 #>   ..   .default = col_character(),
@@ -529,7 +530,7 @@ df <- tibble::tibble(
 outdir <- tempdir()
 path <- econanalyzr::econ_csv_write_out(df, folder = outdir, overwrite = TRUE)
 #> Wrote CSV:
-#> /tmp/RtmpWy7l0k/2025-06-01_2025-01-01-monthly-quits_rate-percent-monthly-sa-nation-us-line.csv
+#> /tmp/RtmpccYq7b/2025-06-01_2025-01-01-monthly-quits_rate-percent-monthly-sa-nation-us-line.csv
 
 basename(path)
 #> [1] "2025-06-01_2025-01-01-monthly-quits_rate-percent-monthly-sa-nation-us-line.csv"

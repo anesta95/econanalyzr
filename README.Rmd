@@ -26,7 +26,7 @@ functions, and **data visualization** functions.
 These are some of the most commonly used functions currently available: 
 
 * `get_bls_data()` which is a wrapper that sends HTTP requests to the BLS site with a valid user-supplied email to download TSV data from their flat file database.
-* `percent_change()` which calculates the percentage change between two numeric scalars or vectors
+* `percent_change()` which calculates the percentage change between two numeric scalars or vectors.
 * `annualize_change()` which calculate the annualized rate of change between two numeric scalars or vectors for a given time period.
 * `create_index()` which calculates a 0 or 100-based index version of a numeric vector based on the starting value supplied.
 * `create_diffusion_index()` which calculates a diffusion index for two numeric scalars or vectors based on the [Federal Reserve](https://www.richmondfed.org/-/media/richmondfedorg/publications/research/economic_quarterly/2004/fall/pdf/harrisowenssarte.pdf) or [IHS Markit](https://cdn.ihsmarkit.com/www/pdf/1218/IHS-Markit-PMI-Introduction.pdf) methods or one numeric scalar or vector based on the [Conference Board](https://www.conference-board.org/data/bci/index.cfm?id=2180) method.
@@ -36,8 +36,9 @@ These are some of the most commonly used functions currently available:
 You can install the development version of econanalyzr from [GitHub](https://github.com/) with:
 
 ``` r
-# install.packages("pak")
 pak::pak("anesta95/econanalyzr")
+# or
+devtools::install_github("anesta95/econanalyzr")
 ```
 
 ## Data Import Examples

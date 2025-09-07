@@ -12,6 +12,7 @@ Description: This package provides a handful of functions that execute
     from the Bureau of Labor Statistics, Bureau of Economic Analysis, 
     Census Bureau, World Bank, Eurostat, IMF, and others. 
 License: MIT + file LICENSE
+URL: https://anesta95.github.io/econanalyzr/, https://github.com/anesta95/econanalyzr
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
@@ -27,7 +28,9 @@ Imports:
     tibble,
     vctrs
 Suggests: 
+    knitr,
     ragg,
+    rmarkdown,
     svglite,
     testthat (>= 3.0.0),
     webfakes,
@@ -36,3 +39,4 @@ Config/testthat/edition: 3
 Depends: 
     R (>= 3.5)
 LazyData: true
+VignetteBuilder: knitr

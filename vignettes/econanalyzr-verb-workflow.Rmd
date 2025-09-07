@@ -1,0 +1,176 @@
+---
+title: "Functions for working with `{econanalyzr}` tibbles"
+subtitle: "A workflow that showcases some of the common functions that work with `{econanalyzr}` tibbles"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{econanalyzr-verb-workflow}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+options(tibble.print_max = 5L)
+options(rmarkdown.html_vignette.check_title = FALSE)
+```
+## Introduction
+This vignette walks through a typical `{econanalyzr}` workflow:
+* Build a valid `{econanalyzr}` tibble with the required schema.
+* Compute one-off summaries with `econ_value_summary()`.
+* Append a trailing moving average with `econ_calc_trail_avg()`.
+* Filter by a closed date interval with `econ_filter_dates()`.
+* Save the table to a CSV with a descriptive filename via `econ_csv_write_out()`.
+
+```{r setup, message = FALSE}
+library(econanalyzr)
+library(dplyr)
+library(tibble)
+```
+
+## Construct a valid `{econanalyzr}` tibble
+econanalyzr tables have 9 required columns in a specific order and a final
+column `viz_type_text`. Below we create data for two
+geographic entities (US, CA), ensuring doubles/characters as expected.
+
+```{r}
+set.seed(123)
+
+# Monthly dates for a year
+dates <- seq.Date(as.Date("2024-01-01"), by = "month", length.out = 12)
+geos  <- c("US", "CA")
+
+# Cross-join dates and geos, then create values with simple trends by group
+df0 <- tibble::tibble(
+  date             = rep(dates, each = length(geos)),
+  geo_entity_text  = rep(geos,  times = length(dates))
+)  |> 
+  arrange(date, geo_entity_text) |>
+  group_by(geo_entity_text) |>
+  mutate(
+    t_seq = row_number(),
+    value = as.double(if_else(
+      geo_entity_text == "US",
+      100 + 0.20 * t_seq,   # gentle uptrend for US
+      98  + 0.15 * t_seq    # gentle uptrend for CA
+    ))
+  ) |>
+  ungroup() |>
+  mutate(
+    date_period_text     = "Monthly",
+    data_element_text    = "Quits Rate",
+    data_measure_text    = "Percent",
+    date_measure_text    = "Monthly",
+    data_transform_text  = "Seasonally Adjusted",
+    geo_entity_type_text = "Nation",
+    viz_type_text        = "Line"
+  ) |>
+  # Put columns in the required order: 
+  # first 9 required, then viz_type_text last
+  select(
+    date, date_period_text, value, data_element_text,
+    data_measure_text, date_measure_text, data_transform_text,
+    geo_entity_type_text, geo_entity_text, viz_type_text
+  )
+
+# Validate & normalize (reorders/coerces if needed)
+df <- econanalyzr:::check_econanalyzr_df(df0)
+
+# Peek at the result
+df
+```
+
+## One off summaries with `econ_value_summary()`
+You can compute a statistic on a numeric column after applying either a date
+membership filter (`dates`) or a closed range (`date_range`).
+
+```{r}
+# Mean of 'value' for the last 3 months of US only
+df_us   <- filter(df, geo_entity_text == "US")
+last_3  <- tail(unique(df_us$date), 3)
+mean_us_last3 <- econ_value_summary(
+  df       = df_us,
+  dates    = last_3,
+  .fun     = mean,
+  na_rm    = TRUE
+)
+mean_us_last3
+
+# Median over an *exclusive* range (drop rows in range) for CA
+df_ca   <- filter(df, geo_entity_text == "CA")
+rng     <- as.Date(c("2024-04-01","2024-08-01"))
+med_ca_exclusive <- econ_value_summary(
+  df          = df_ca,
+  date_range  = rng,
+  filter_type = "exclusive",
+  .fun        = median
+)
+med_ca_exclusive
+
+# Vector summary (quantiles) over all rows
+q_all <- econ_value_summary(
+  df    = df_us,
+  .fun  = function(x) stats::quantile(x, probs = c(.25, .5, .75), names = TRUE)
+)
+q_all
+
+```
+
+## Append a trailing moving average in long form
+`econ_calc_trail_avg()` computes a right-aligned trailing window and appends
+the derived rows to the original table in long form. If the input is grouped,
+the trailing average is computed within groups.
+
+```{r}
+# Group by geo and compute a 3-period trailing average per series
+df_trailing <- df |> 
+  group_by(geo_entity_text) |> 
+  econ_calc_trail_avg(trail_amount = 3L)
+
+# The result contains original rows + trailing-average rows (twice the number of rows here)
+nrow(df)
+nrow(df_trailing)
+
+# Show the df_trailing data frame
+df_trailing |> 
+  filter(grepl("Trail", data_transform_text))
+
+```
+## Filter by a closed date interval
+Use `econ_filter_dates()` to filter by an explicit interval, or derive the start
+date from a period (days/weeks/months/quarters/years). `{econanalyzr}` tibbles will always
+be in the `YYYY-MM-DD` format and should be the earlier date in the period. So the date for
+Q2 2025 would be `2025-04-01` and for 2026 as a year would be `2026-01-01`. 
+
+```{r}
+# A) Explicit interval (closed):
+filtered_closed <- econ_filter_dates(
+  df,
+  start_date = as.Date("2024-06-01"),
+  end_date   = as.Date("2024-10-01")
+)
+filtered_closed
+
+# B) Derived interval: "last 6 months" ending at the table’s latest date
+filtered_open <- econ_filter_dates(
+  df,
+  period_type   = "months",
+  period_amount = 6
+)
+filtered_open
+
+```
+## Write to a CSV with a descriptive filename
+
+```{r, eval = FALSE}
+out_dir <- tempdir()
+csv_path <- econ_csv_write_out(
+  df = filtered_open,
+  folder = out_dir,
+  overwrite = TRUE,  
+  quiet = FALSE      
+)
+```
+
