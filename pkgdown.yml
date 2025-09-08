@@ -1,0 +1,12 @@
+pandoc: 3.1.11
+pkgdown: 2.1.3
+pkgdown_sha: ~
+articles:
+  calc-change-over-time: calc-change-over-time.html
+  econanalyzr-verb-workflow: econanalyzr-verb-workflow.html
+  get-bls: get-bls.html
+  working-with-indexes: working-with-indexes.html
+last_built: 2025-09-08T02:16Z
+urls:
+  reference: http://justanesta.com/econanalyzr/reference
+  article: http://justanesta.com/econanalyzr/articles
