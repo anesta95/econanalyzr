@@ -1,5 +1,5 @@
 ---
-title: "Functions for working with `{econanalyzr}` tibbles"
+title: "Functions for working with {econanalyzr} tibbles"
 subtitle: "A workflow that showcases some of the common functions that work with `{econanalyzr}` tibbles"
 output: rmarkdown::html_vignette
 vignette: >
@@ -9,6 +9,7 @@ vignette: >
 ---
 
 ```{r, include = FALSE}
+options(rmarkdown.html_vignette.check_title = FALSE)
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
