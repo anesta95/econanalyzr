@@ -78,8 +78,8 @@ tibbles</h3>
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>This vignette walks through a typical <a href="https://anesta95.github.io/econanalyzr/" class="external-link">econanalyzr</a>
-workflow: * Build a valid <a href="https://anesta95.github.io/econanalyzr/" class="external-link">econanalyzr</a> tibble with the
+<p>This vignette walks through a typical <a href="https://justanesta.com/econanalyzr/">econanalyzr</a>
+workflow: * Build a valid <a href="https://justanesta.com/econanalyzr/">econanalyzr</a> tibble with the
 required schema. * Compute one-off summaries with
 <code><a href="../reference/econ_value_summary.html">econ_value_summary()</a></code>. * Append a trailing moving average
 with <code><a href="../reference/econ_calc_trail_avg.html">econ_calc_trail_avg()</a></code>. * Filter by a closed date
@@ -87,7 +87,7 @@ interval with <code><a href="../reference/econ_filter_dates.html">econ_filter_da
 CSV with a descriptive filename via
 <code><a href="../reference/econ_csv_write_out.html">econ_csv_write_out()</a></code>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://anesta95.github.io/econanalyzr/" class="external-link">econanalyzr</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://justanesta.com/econanalyzr/">econanalyzr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tibble.tidyverse.org/" class="external-link">tibble</a></span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -244,7 +244,7 @@ groups.</p>
 </h2>
 <p>Use <code><a href="../reference/econ_filter_dates.html">econ_filter_dates()</a></code> to filter by an explicit
 interval, or derive the start date from a period
-(days/weeks/months/quarters/years). <a href="https://anesta95.github.io/econanalyzr/" class="external-link">econanalyzr</a> tibbles
+(days/weeks/months/quarters/years). <a href="https://justanesta.com/econanalyzr/">econanalyzr</a> tibbles
 will always be in the <code>YYYY-MM-DD</code> format and should be the
 earlier date in the period. So the date for Q2 2025 would be
 <code>2025-04-01</code> and for 2026 as a year would be

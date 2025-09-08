@@ -18,7 +18,7 @@
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Helps You Analyze Economic Data">
 <meta name="description" content="This package provides a handful of functions that execute calculations commonly used for economic data analysis like tabulating simple percent changes, annualized changes, diffusion indexes as well as general data series indexing. The package also containers helper functions for getting flat file data from the Bureau of Labor Statistics (BLS) and includes helper data frames of various geographic and industrial hierarchies from the Bureau of Labor Statistics, Bureau of Economic Analysis, Census Bureau, World Bank, Eurostat, IMF, and others.">
 <meta property="og:description" content="This package provides a handful of functions that execute calculations commonly used for economic data analysis like tabulating simple percent changes, annualized changes, diffusion indexes as well as general data series indexing. The package also containers helper functions for getting flat file data from the Bureau of Labor Statistics (BLS) and includes helper data frames of various geographic and industrial hierarchies from the Bureau of Labor Statistics, Bureau of Economic Analysis, Census Bureau, World Bank, Eurostat, IMF, and others.">
-<meta property="og:image" content="http://justanesta.com/econanalyzr/logo.png">
+<meta property="og:image" content="https://justanesta.com/econanalyzr/logo.png">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -96,7 +96,7 @@
 </h2>
 <p>Use the <code><a href="reference/get_bls_data.html">get_bls_data()</a></code> function to get TSV data from the BLS survey flat file database. This function will require you to provide a valid email in the request <code>user-agent</code> which is now required to programmatically obtain BLS data in this way.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://anesta95.github.io/econanalyzr/" class="external-link">econanalyzr</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://justanesta.com/econanalyzr/">econanalyzr</a></span><span class="op">)</span></span>
 <span><span class="va">bls_jolts</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_bls_data.html">get_bls_data</a></span><span class="op">(</span></span>
 <span>  bls_url <span class="op">=</span> <span class="st">"https://download.bls.gov/pub/time.series/jt/jt.data.1.AllItems"</span>, </span>
 <span>  email <span class="op">=</span> <span class="st">"govdata.decimeter618@passmail.net"</span></span>
@@ -125,7 +125,7 @@
 </h2>
 <p>Use the <code><a href="reference/percent_change.html">percent_change()</a></code> function to calculate the percentage change between two numeric scalars and vectors:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://anesta95.github.io/econanalyzr/" class="external-link">econanalyzr</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://justanesta.com/econanalyzr/">econanalyzr</a></span><span class="op">)</span></span>
 <span><span class="co"># Scalar → scalar</span></span>
 <span><span class="fu"><a href="reference/percent_change.html">percent_change</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">120</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 0.2</span></span>
@@ -149,7 +149,7 @@
 <span><span class="co">#&gt; [1]  NA 0.5</span></span></code></pre></div>
 <p>Use the <code><a href="reference/annualize_change.html">annualize_change()</a></code> function to calculate the annualized <em>one month</em> change between two numeric vectors of values:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://anesta95.github.io/econanalyzr/" class="external-link">econanalyzr</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://justanesta.com/econanalyzr/">econanalyzr</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Monthly: from 100 to 103 over 1 month (12 months/year)</span></span>
 <span><span class="fu"><a href="reference/annualize_change.html">annualize_change</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">103</span>, time_elapsed <span class="op">=</span> <span class="fl">1</span>, time_unit <span class="op">=</span> <span class="st">"monthly"</span><span class="op">)</span></span>
@@ -173,7 +173,7 @@
 <span><span class="co">#&gt; [1] 0.2952563</span></span></code></pre></div>
 <p>Use the <code><a href="reference/create_index.html">create_index()</a></code> to transform a vector of numeric values into a 0 or 100 based index:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://anesta95.github.io/econanalyzr/" class="external-link">econanalyzr</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://justanesta.com/econanalyzr/">econanalyzr</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Base-100 index (default): base is the first element (50 -&gt; 100)</span></span>
 <span><span class="fu"><a href="reference/create_index.html">create_index</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">100</span>, <span class="fl">150</span><span class="op">)</span><span class="op">)</span></span>
@@ -201,7 +201,7 @@
 <span><span class="co">#&gt; [1] 100  NA 200</span></span></code></pre></div>
 <p>Use the <code><a href="reference/create_diffusion_index.html">create_diffusion_index()</a></code> to calculate a Federal Reserve or IHS diffusion index from numeric values of percent increase, percent unchanged, or percent decreasing or a Conference Board diffusion index from percent change values.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://anesta95.github.io/econanalyzr/" class="external-link">econanalyzr</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://justanesta.com/econanalyzr/">econanalyzr</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Federal Reserve method: (pct_increased − pct_decreased) * 100</span></span>
 <span><span class="fu"><a href="reference/create_diffusion_index.html">create_diffusion_index</a></span><span class="op">(</span></span>
@@ -305,7 +305,7 @@
 </h2>
 <p><code><a href="reference/econ_value_summary.html">econ_value_summary()</a></code> filters an econanalyzr-valid data frame by either a set of dates or a closed date range, pulls a numeric column (defaults to “value”), and applies a user-supplied function to the filtered vector.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://anesta95.github.io/econanalyzr/" class="external-link">econanalyzr</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://justanesta.com/econanalyzr/">econanalyzr</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Minimal econanalyzr-valid example data</span></span>
 <span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
@@ -349,7 +349,7 @@
 <span><span class="co">#&gt; 103.5 106.5 111.0</span></span></code></pre></div>
 <p><code><a href="reference/econ_calc_trail_avg.html">econ_calc_trail_avg()</a></code> computes a right-aligned trailing average of <code>value</code> based on a user-specified window and appends those rows to your <code>econanalyzr</code> tibble in long form. Incomplete windows produce <code>NA</code>, and <code>; Trail {n}</code> is appended to the <code>data_transform_text</code> field where <code>n</code> is the length of the window.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://anesta95.github.io/econanalyzr/" class="external-link">econanalyzr</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://justanesta.com/econanalyzr/">econanalyzr</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Minimal econanalyzr-valid data (one series)</span></span>
 <span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
@@ -419,7 +419,7 @@
 <span><span class="co">#&gt; Each country's trailing means are computed independently within its group.</span></span></code></pre></div>
 <p><code><a href="reference/econ_filter_dates.html">econ_filter_dates()</a></code> filters an econanalyzr-valid data frame to a closed date interval <code>[start_date, end_date]</code>. If <code>start_date</code> is omitted, you can specify a period (<code>period_type</code> + <code>period_amount</code>) and it derives <code>start_date = end_date − period</code> (with <code>end_date</code> defaulting to the latest non-NA date). Returns rows inclusive of the bounds and ordered newest-first.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://anesta95.github.io/econanalyzr/" class="external-link">econanalyzr</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://justanesta.com/econanalyzr/">econanalyzr</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Minimal econanalyzr-valid table (10 monthly points)</span></span>
 <span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
@@ -469,7 +469,7 @@
 <span><span class="co">#&gt; 5 2025-02-01    60</span></span></code></pre></div>
 <p><code><a href="reference/econ_csv_write_out.html">econ_csv_write_out()</a></code> validates an econanalyzr data frame and writes it to CSV using a descriptive filename built from the date span and all *_text columns.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://anesta95.github.io/econanalyzr/" class="external-link">econanalyzr</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://justanesta.com/econanalyzr/">econanalyzr</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Minimal econanalyzr-valid tibble</span></span>
 <span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
