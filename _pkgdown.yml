@@ -2,5 +2,5 @@ url: https://justanesta.com/econanalyzr/
 template:
   bootstrap: 5
   light-switch: true
-math-rendering: mathjax
+  math-rendering: mathjax
 
